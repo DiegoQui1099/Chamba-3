@@ -19,8 +19,27 @@ mysql = MySQL(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    
-    return render_template('index.html')
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT id, nombre FROM motivoautorizacion")
+    motivoautorizacion = cursor.fetchall()
+
+    cursor.execute("SELECT id, nombre FROM validaciondocumentos")
+    validaciondocumentos = cursor.fetchall()
+
+    cursor.execute("SELECT id, nombre FROM documentos")
+    tipodocumento = cursor.fetchall()
+
+    cursor.execute("SELECT id, nombre FROM banco")
+    banco = cursor.fetchall()
+
+    cursor.execute("SELECT id, departamentos FROM departamentos")
+    departamentos = cursor.fetchall()
+
+    cursor.execute("SELECT id, localidad FROM localidades")
+    localidades = cursor.fetchall()
+
+    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, banco=banco, departamentos=departamentos, localidades=localidades)
 
 @app.route('/download/<filename>')
 def download_file(filename):
@@ -150,7 +169,7 @@ def upload():
     anios = list(range(1900, 2071))
     cursor.close()
 
-    return render_template('upload.html', macroprocesos=macroprocesos, procesos=procesos, documento=documento, anios=anios)
+    return render_template('upload.html')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
