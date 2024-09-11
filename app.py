@@ -1,11 +1,10 @@
+from flask import Flask, flash, render_template, make_response, request, redirect, session, url_for, abort, send_file
 import hashlib
 import os
 import io
-import random
 import re
-from flask import Flask, flash, render_template, make_response, request, redirect, session, url_for, abort, send_file
+from datetime import datetime
 from flask_mysqldb import MySQL
-import MySQLdb
 from config import Config
 from functools import wraps
 
@@ -15,29 +14,104 @@ app.secret_key = 'tu_clave_secreta_aqui'
 mysql = MySQL(app)
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'loggedin' not in session or not session['loggedin']:
+            flash('Debe iniciar sesión para acceder a esta página', 'login-warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/index', methods=['GET', 'POST'])
+@login_required
 def index():
-
+ 
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT id, nombre FROM motivoautorizacion")
+    cursor.execute("SELECT id_mt, nombre FROM motivoautorizacion")
     motivoautorizacion = cursor.fetchall()
-
-    cursor.execute("SELECT id, nombre FROM validaciondocumentos")
+ 
+    cursor.execute("SELECT id_val, nombre FROM validaciondocumentos")
     validaciondocumentos = cursor.fetchall()
-
-    cursor.execute("SELECT id, nombre FROM documentos")
+ 
+    cursor.execute("SELECT id_dc, nombre FROM documentos")
     tipodocumento = cursor.fetchall()
-
-    cursor.execute("SELECT id, nombre FROM banco")
+ 
+    cursor.execute("SELECT id_bc, nombre FROM banco")
     banco = cursor.fetchall()
-
-    cursor.execute("SELECT id, departamentos FROM departamentos")
+ 
+    cursor.execute("SELECT id_dp, departamentos FROM departamentos")
     departamentos = cursor.fetchall()
-
-    cursor.execute("SELECT id, localidad FROM localidades")
+ 
+    cursor.execute("SELECT id_lc, localidad FROM localidades")
     localidades = cursor.fetchall()
+ 
+    nombre_usuario = session.get('nombre')
+ 
+    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario)
 
-    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, banco=banco, departamentos=departamentos, localidades=localidades)
+@app.route('/add_oficios', methods=['POST'])
+def add_oficios():
+    # Recupera el idUser desde la sesión
+    idUser = session.get('idUser')
+    if idUser is None:
+        flash('No estás autenticado. Inicia sesión para continuar.')
+        return redirect(url_for('login'))
+
+    fechaTramite = request.form.get('fechaTramite') or None
+    numeroFolio = request.form.get('numeroFolio') or None
+    numeroDocumento = request.form.get('nDocumento')
+    nombre = request.form.get('Usuario')
+    fechaConsignacion = request.form.get('dfecha') or None
+    valorConsignacion = request.form.get('valorConsignacion') or None
+    docCompleta = request.form.get('aPlano') or None
+    codigoUnico = request.form.get('codigoUnico') or None
+    archivoPlano = request.form.get('archivoPlano') or None
+    observacion = request.form.get('observacion') or None
+    departamento = request.form.get('lTramite') or None
+    localidad = request.form.get('lLocalidad') or None
+    tipoDocumento = request.form.get('tipoDocumento')
+    banco = request.form.get('banco')
+    motivo_autorizacion = request.form.get('motivoAutorizacion')
+    
+    # Obtener los valores seleccionados en el checkbox de validación
+    validacion = request.form.getlist('vDoc')  # devuelve una lista de valores seleccionados
+
+    # Si validacion está vacío, asignar None
+    validacion = None if not validacion else ','.join(validacion)
+    
+    # Usa mysql.connection.cursor() para obtener el cursor
+    cursor = mysql.connection.cursor()
+    
+    try:
+        sql = """
+            INSERT INTO oficios (
+                fechaTramite, numeroFolio, numeroDocumento, nombre, 
+                fechaConsignacion, valorConsignacion, docCompleta, 
+                codigoUnico, archivoPlano, observacion, 
+                id_dp, id_lc, id_dc, id_bc, id_mt, idUser, id_val
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        
+        # Asegúrate de tener valores predeterminados en caso de que algunos campos sean opcionales
+        data = (
+            fechaTramite, numeroFolio, numeroDocumento, nombre,
+            fechaConsignacion, valorConsignacion, docCompleta,
+            codigoUnico, archivoPlano, observacion,
+            departamento, localidad, tipoDocumento, banco, motivo_autorizacion, idUser, validacion
+        )
+        
+        cursor.execute(sql, data)
+        mysql.connection.commit()
+        flash('Oficio agregado correctamente', 'success')
+    except mysql.connection.Error as err:
+        flash(f"Error al agregar el oficio: {err}", 'error')
+        mysql.connection.rollback()
+    finally:
+        cursor.close()
+    
+    return redirect(url_for('index'))
+
 
 @app.route('/download/<filename>')
 def download_file(filename):
@@ -147,13 +221,15 @@ def login():
     if request.method == 'POST':
         usuario = request.form['usuario']
         contraseña = encrypt_password(request.form['contraseña'])
-
-        cursor.execute("SELECT id, estado FROM usuarios WHERE usuario=%s AND contraseña=%s", (usuario, contraseña))
+        
+        cursor.execute("SELECT idUser, nombre, estado FROM usuarios WHERE usuario=%s AND contraseña=%s", (usuario, contraseña))
         usuario_data = cursor.fetchone()
 
         if usuario_data:
-            if usuario_data[1] == 'A':  # Verificar que el estado sea activo
+            if usuario_data[2] == 'A':  # Verificar que el estado sea activo
                 session['usuario'] = usuario  # Almacenar el nombre de usuario en la sesión
+                session['nombre'] = usuario_data[1]
+                session['idUser'] = usuario_data[0]  # Guardar idUser en la sesión
                 session['loggedin'] = True  # Establecer que el usuario ha iniciado sesión
                 if usuario == 'admin':  # Si el usuario es 'admin'
                     return redirect(url_for('admin'))  # Redirigir a la página de administración
@@ -165,6 +241,7 @@ def login():
         
     cursor.close()
     return render_template('login.html')
+
 
 def validar_contraseña(contraseña):
     if (re.search(r'[A-Z]', contraseña) and   # Al menos una letra mayúscula
@@ -233,16 +310,6 @@ def logout():
     resp.headers['Expires'] = '0'
     return resp
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'loggedin' not in session or not session['loggedin']:
-            flash('Debe iniciar sesión para acceder a esta página', 'login-warning')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
 @app.after_request
 def after_request(response):
     response.headers['Cache-Control'] = 'no-store'
@@ -304,6 +371,20 @@ def admin():
     cursor.close()
     return render_template('admin.html', usuarios=usuarios)
 
+
+# Captar el perfil para obtener el nombre de la persona dueña del perfil #
+@app.route('/perfilE')
+def perfilE():
+    if 'user_id' not in session:
+        return redirect(url_for('iniciosesion'))
+
+    user_id = session['user_id']
+
+    # Lógica para obtener la información del empleado desde la base de datos
+    funcionario = (user_id)
+
+
+    return render_template('empleados/perfilE.html', funcionario=funcionario)
 
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'], port=app.config['PORT'])

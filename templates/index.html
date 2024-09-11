@@ -40,23 +40,21 @@
         <br><br>
         <div class="row">
 
-            <form id="form1" name="form1">
+            <form id="form1" name="form1" action="/add_oficios" method="POST">
                 <div class="col-md-6">
                     <div class="row">
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Número de Documento</label>
+                                <label for="nDocumento">Número de Documento</label>
                                 <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
                             </div>
 
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <br>
-                                <a class="btn btn-link" id="msgCedula" onclick="validarCedula();">Nombre Del
-                                    Funcionario</a>
-
+                                <label for="Usuario">Nombre Del Funcionario</label>
+                                <h4><input type="text" name="Usuario" id="Usuario" value="{{ nombre_usuario }}" /></h4>
                             </div>
                         </div>
                     </div>
@@ -68,7 +66,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
 
-                                <label>Tipo de Documento</label>
+                                <label for="tipoDocumento">Tipo de Documento</label>
                                 <select name="tipoDocumento" class="form-control" id="tipoDocumento">
                                     <option value="1" selected="selected">Seleccione</option>
                                     {% for tipoDoc in tipodocumento %}
@@ -82,7 +80,7 @@
 
                             <div class="form-group">
 
-                                <label>Motivo de autorización</label>
+                                <label for="motivoAutorizacion">Motivo de autorización</label>
                                 <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion">
                                     <option value="-1" selected="selected">Seleccione</option>
                                     {% for motivo in motivoautorizacion %}
@@ -95,12 +93,12 @@
                         </div>
                     </div>
 
-                    <label>Validación Documentos</label>
+                    <label for="validacionDocumentos">Validación Documentos</label>
                     <div id="checkboxes">
                         <div class="row">
                             {% for doc in validaciondocumentos %}
                             <div class="col-md-6">
-                                <label class="checkbox-inline">
+                                <label for="vDoc" class="checkbox-inline">
                                     <input type="checkbox" name="vDoc" id="vDoc{{ doc[0] }}" value="{{ doc[0] }}">
                                     {{ doc[1] }}
                                 </label>
@@ -111,7 +109,7 @@
 
 
                     <div class="form-group">
-                        <label>Archivo Plano</label>
+                        <label for="aPlano">Archivo Plano</label>
                         <textarea class="form-control" name="aPlano" id="aPlano" rows="2"></textarea>
 
 
@@ -120,7 +118,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Nombre</label>
+                                <label for="nombreCompleto">Nombre</label>
                                 <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" />
 
                             </div>
@@ -128,22 +126,21 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Banco</label>
+                                <label for="banco">Banco</label>
                                 <select name="banco" class="form-control" id="banco">
                                     <option value="1" selected="selected">Seleccione</option>
-                                    {% for banco in banco %}
+                                    {% for banco in bancos %}
                                     <option value="{{ banco[0] }}">{{ banco[1] }}</option>
                                     {% endfor %}
                                 </select>
-
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                     <div class="row">
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Fecha Consignación </label>
+                                <label for="dfecha">Fecha Consignación </label>
                                 <input type="date" name="dfecha" id="dFecha" class="form-control">
 
                             </div>
@@ -151,7 +148,7 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Valor de Consignación </label>
+                                <label for="valorConsignacion">Valor de Consignación </label>
                                 <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control">
 
                             </div>
@@ -162,7 +159,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
 
-                                <label>Lugar del trámite</label>
+                                <label for="lTramite">Lugar del trámite</label>
                                 <select name="lTramite" id="lTramite" class="form-control">
                                     <option value="-1" selected="selected">Seleccione</option>
                                     {% for dtos in departamentos %}
@@ -173,35 +170,33 @@
                             </div>
                         </div>
 
-                        
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Localidad Trámite</label>
-                                    <select name="lTramite" id="lTramite" class="form-control">
-                                        <option value="-1" selected="selected">Seleccione</option>
-                                        {% for loc in localidades %}
-                                        <option value="{{ loc[0] }}">{{ loc[1] }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lLocalidad">Localidad Trámite</label>
+                                <select name="lLocalidad" id="lLocalidad" class="form-control">
+                                    <option value="">No seleccionado</option>
+                                    {% for loc in localidades %}
+                                    <option value="{{ loc[0] }}">{{ loc[1] }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
-                    
+                    </div>
 
-                        <div class="form-group">
-                            <label>Observaciones </label>
-                            <textarea class="form-control" name="observacion" id="observacion" rows="2"
+
+                    <div class="form-group">
+                        <label for="observacion">Observaciones </label>
+                        <textarea class="form-control" name="observacion" id="observacion" rows="2"
                             class="form-control"></textarea>
-                        
+
                     </div>
 
 
 
                     <div class="form-group">
                         <label id="botonPdf">
-                            <button type="button" class="btn btn-danger" id="btnGuardar"
-                                onclick="guardar();">Guardar</button>
-
+                            <button type="submit" class="btn btn-danger" id="btnGuardar">Guardar</button>
                         </label>
 
                     </div>
@@ -267,7 +262,7 @@
 
     <script>
         $(document).ready(function () {
-            // Deshabilitar todos los campos excepto el número de documento al cargar la página
+            // Inicialmente, desbloquear solo el campo de documento y bloquear el resto
             toggleFormFields(true);
             $("#nDocumento").prop('disabled', false);
 
@@ -275,152 +270,169 @@
             $('#nDocumento').keyup(function () {
                 let documento = $(this).val();
                 if (documento.length > 5) {
-
                     toggleFormFields(false);
                     configurarFormulario();  // Configurar el formulario cuando esté desbloqueado
                 } else {
-
+                    // Bloquear todos los campos del formulario excepto el campo de documento
                     toggleFormFields(true);
                 }
             });
-        });
 
-        // Función para habilitar o deshabilitar campos del formulario
-        function toggleFormFields(disabled) {
-            $("input").not("#nDocumento").prop('disabled', disabled);
-            $("textarea").prop('disabled', disabled);
-            $("select").prop('disabled', disabled);
-            $("checkbox").prop('disabled', disabled);
-            $("radio").prop('disabled', disabled);
-        }
-        // Configuración del formulario cuando está desbloqueado
-        function configurarFormulario() {
-            // Actualizar campo de texto dinámicamente según el valor ingresado
-            $("#txtDocumento").text($("#nDocumento").val());
-            $("input").prop('disabled', false);
-            $("textarea").prop('disabled', false);
-            $("select").prop('disabled', false);
-            $("checkbox").prop('disabled', false);
-            $("radio").prop('disabled', false);
-            $("#nDocumento").prop('disabled', false);
+            // Evento de cambio en el campo de tramite
+            $(document).ready(function () {
+                // Inicialmente, deshabilitar el campo de localidad
+                $("#lLocalidad").prop('disabled', true);
+                $("#Usuario").prop('disabled', true);
 
-            $('#nombreCompleto').keyup(function () {
-                $("#txtNombre").text($(this).val());
-            });
+                // Evento de cambio en el campo de trámite
+                $('#lTramite').change(function () {
+                    // Obtener el valor seleccionado
+                    let lugarTramite = $(this).val().trim();
+                    console.log("Valor seleccionado en lTramite:", lugarTramite);
 
-            $("#lTramite").change(function () {
-                $("#txtTramite").text($("#lTramite option:selected").text());
-            });
-
-            $("#motivoAutorizacion").change(function () {
-                $("#txtMotivo").text($("#motivoAutorizacion option:selected").text());
-            });
-
-            $("#tipoDocumento").change(function () {
-                var str = $("#tipoDocumento option:selected").text();
-                var valor = $(this).val();
-                var consignacion;
-                switch (valor) {
-                    case '2': // CC
-                        consignacion = 49350;
-                        break;
-                    case '3': // TI
-                        consignacion = 48400;
-                        break;
-                    case '1': // RC
-                        consignacion = 8000;
-                        break;
-                    case '4':
-                        consignacion = 4500;
-                        break;
-                    default:
-                        consignacion = 0;
-                        break;
-                }
-                $('#txtTipoDocumento').text(str);
-                $('#valorConsignacion').val(consignacion);
-            });
-
-            $("#banco").change(function () {
-                var str = $("#banco option:selected").text();
-                var valor = $(this).val();
-                var particula = (valor == 1 || valor == 2) ? "del " : "de ";
-                $('#particulaBanco').text(particula);
-                $('#txtBanco').text(str);
-            });
-
-            $('#aPlano').keyup(function () {
-                $("#txtPlano").text($(this).val());
-            });
-
-            // Checkboxes
-            $("#checkboxes").change(function () {
-                var favorite = [];
-                $.each($("input[name='vDoc']:checked"), function () {
-                    favorite.push($(this).val());
-                });
-                $("#txtValidacion").text(favorite.join(", "));
-            });
-
-            $("#madeBy").change(function () {
-                var valor = $(this).val();
-                if (!valor) {
-                    $('#madeBy').css('border-color', 'red');
-                    $('#btnExportar').prop('disabled', true);
-                    $('#btnGuardar').prop('disabled', true);
-                } else {
-                    $('#madeBy').css('border-color', '');
-                    $('#btnExportar').prop('disabled', false);
-                    if (!$('#nOficio').val()) {
-                        $('#btnGuardar').prop('disabled', false);
+                    // Comparar el valor seleccionado con el valor esperado
+                    if (lugarTramite === 'Cundinamarca') {
+                        $("#lLocalidad").prop('disabled', false); // Habilitar el campo de localidad
+                    } else {
+                        $("#lLocalidad").prop('disabled', true); // Deshabilitar el campo de localidad
                     }
-                }
+                });
             });
-        }
 
-        function ajustarTamanoFuente(element) {
-            let fontSize = 16; // Tamaño inicial de la fuente en píxeles
-            element.style.fontSize = `${fontSize}px`;
-
-            // Ajustar el tamaño de la fuente si el texto supera el contenedor
-            while (element.scrollHeight > element.offsetHeight && fontSize > 8) { // Limitar el tamaño mínimo de la fuente a 8px
-                fontSize--;
-                element.style.fontSize = `${fontSize}px`;
+            // Función para habilitar o deshabilitar campos del formulario
+            function toggleFormFields(disabled) {
+                $("input").not("#nDocumento, #lLocalidad").prop('disabled', disabled);
+                $("textarea").prop('disabled', disabled);
+                $("select").not("#lLocalidad").prop('disabled', disabled); // Excluir el campo de localidad
+                $("checkbox").prop('disabled', disabled);
+                $("radio").prop('disabled', disabled);
+                $("label").prop('disabled', disabled);
             }
-        }
 
-        function actualizarTextoPlano() {
-            const txtPlano = document.getElementById("txtPlano");
-            const texto = txtPlano.textContent || txtPlano.innerText;
+            // Configuración del formulario cuando está desbloqueado
+            function configurarFormulario() {
+                // Actualizar campo de texto dinámicamente según el valor ingresado
+                $("#txtDocumento").text($("#nDocumento").val());
 
-            // Actualizar el contenido del elemento con el texto ingresado
-            txtPlano.textContent = texto;
+                $('#nombreCompleto').keyup(function () {
+                    $("#txtNombre").text($(this).val());
+                });
 
-            // Ajustar el tamaño de la fuente para que el texto se ajuste al contenedor
-            ajustarTamanoFuente(txtPlano);
-        }
+                $("#lTramite").change(function () {
+                    $("#txtTramite").text($("#lTramite option:selected").text());
+                });
 
-        // Configurar el evento para actualizar el texto y ajustar el tamaño de la fuente
-        document.getElementById("aPlano").addEventListener("keyup", function () {
-            const txtPlano = document.getElementById("txtPlano");
-            txtPlano.textContent = this.value;
-            actualizarTextoPlano();
+                $("#motivoAutorizacion").change(function () {
+                    $("#txtMotivo").text($("#motivoAutorizacion option:selected").text());
+                });
+
+                $("#tipoDocumento").change(function () {
+                    var str = $("#tipoDocumento option:selected").text();
+                    var valor = $(this).val();
+                    var consignacion;
+                    switch (valor) {
+                        case '2': // CC
+                            consignacion = 49350;
+                            break;
+                        case '3': // TI
+                            consignacion = 48400;
+                            break;
+                        case '1': // RC
+                            consignacion = 8000;
+                            break;
+                        case '4':
+                            consignacion = 4500;
+                            break;
+                        default:
+                            consignacion = 0;
+                            break;
+                    }
+                    $('#txtTipoDocumento').text(str);
+                    $('#valorConsignacion').val(consignacion);
+                });
+
+                $("#banco").change(function () {
+                    var str = $("#banco option:selected").text();
+                    var valor = $(this).val();
+                    var particula = (valor == 1 || valor == 2) ? "del " : "de ";
+                    $('#particulaBanco').text(particula);
+                    $('#txtBanco').text(str);
+                });
+
+                $('#aPlano').keyup(function () {
+                    $("#txtPlano").text($(this).val());
+                });
+
+                // Checkboxes
+                $("#checkboxes").change(function () {
+                    var favorite = [];
+                    $.each($("input[name='vDoc']:checked"), function () {
+                        favorite.push($(this).val());
+                    });
+                    $("#txtValidacion").text(favorite.join(", "));
+                });
+
+                $("#madeBy").change(function () {
+                    var valor = $(this).val();
+                    if (!valor) {
+                        $('#madeBy').css('border-color', 'red');
+                        $('#btnExportar').prop('disabled', true);
+                        $('#btnGuardar').prop('disabled', true);
+                    } else {
+                        $('#madeBy').css('border-color', '');
+                        $('#btnExportar').prop('disabled', false);
+                        if (!$('#nOficio').val()) {
+                            $('#btnGuardar').prop('disabled', false);
+                        }
+                    }
+                });
+            }
+
+            function ajustarTamanoFuente(element) {
+                let fontSize = 16; // Tamaño inicial de la fuente en píxeles
+                element.style.fontSize = `${fontSize}px`;
+
+                // Ajustar el tamaño de la fuente si el texto supera el contenedor
+                while (element.scrollHeight > element.offsetHeight && fontSize > 8) { // Limitar el tamaño mínimo de la fuente a 8px
+                    fontSize--;
+                    element.style.fontSize = `${fontSize}px`;
+                }
+            }
+
+            function actualizarTextoPlano() {
+                const txtPlano = document.getElementById("txtPlano");
+                const texto = txtPlano.textContent || txtPlano.innerText;
+
+                // Actualizar el contenido del elemento con el texto ingresado
+                txtPlano.textContent = texto;
+
+                // Ajustar el tamaño de la fuente para que el texto se ajuste al contenedor
+                ajustarTamanoFuente(txtPlano);
+            }
+
+            // Configurar el evento para actualizar el texto y ajustar el tamaño de la fuente
+            document.getElementById("aPlano").addEventListener("keyup", function () {
+                const txtPlano = document.getElementById("txtPlano");
+                txtPlano.textContent = this.value;
+                actualizarTextoPlano();
+            });
+
+            function actualizarHora() {
+                const ahora = new Date();
+                const opciones = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                const fechaHora = ahora.toLocaleString('es-ES', opciones);
+                document.getElementById('horaActual').textContent = `Bogotá D.C. ${fechaHora}`;
+            }
+
+            // Actualizar la hora al cargar la página
+            actualizarHora();
+
+            // Actualizar la hora cada segundo
+            setInterval(actualizarHora, 1000);
         });
-
-        function actualizarHora() {
-            const ahora = new Date();
-            const opciones = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const fechaHora = ahora.toLocaleString('es-ES', opciones);
-            document.getElementById('horaActual').textContent = `Bogotá D.C. ${fechaHora}`;
-        }
-
-        // Actualizar la hora al cargar la página
-        actualizarHora();
-
-        // Actualizar la hora cada segundo
-        setInterval(actualizarHora, 1000);
-
     </script>
+
+
 </body>
 
 </html>
