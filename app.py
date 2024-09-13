@@ -58,15 +58,15 @@ def add_oficios():
         flash('No estás autenticado. Inicia sesión para continuar.')
         return redirect(url_for('login'))
 
-    fechaTramite = request.form.get('fechaTramite') or None
+    fechaTramite = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     numeroFolio = request.form.get('numeroFolio') or None
     numeroDocumento = request.form.get('nDocumento')
-    nombre = request.form.get('Usuario')
+    nombre = request.form.get('nombreCompleto')
     fechaConsignacion = request.form.get('dfecha') or None
     valorConsignacion = request.form.get('valorConsignacion') or None
-    docCompleta = request.form.get('aPlano') or None
+    docCompleta = 1
     codigoUnico = request.form.get('codigoUnico') or None
-    archivoPlano = request.form.get('archivoPlano') or None
+    archivoPlano = request.form.get('aPlano') or None
     observacion = request.form.get('observacion') or None
     departamento = request.form.get('lTramite') or None
     localidad = request.form.get('lLocalidad') or None
@@ -80,6 +80,10 @@ def add_oficios():
     # Si validacion está vacío, asignar None
     validacion = None if not validacion else ','.join(validacion)
     
+    # Si se selecciona "Bogotá D.C." o "Seleccione", asignamos None a departamento
+    if departamento == "Bogota D.C" or departamento == "":  
+        departamento = None
+
     # Usa mysql.connection.cursor() para obtener el cursor
     cursor = mysql.connection.cursor()
     
