@@ -47,14 +47,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required/>
                             </div>
 
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="Usuario">Nombre Del Funcionario</label>
-                                <h4><input type="text" name="Usuario" id="Usuario" value="{{ nombre_usuario }}" /></h4>
+                                <h4><input type="text" name="Usuario" id="Usuario" value="{{ nombre_usuario }}" required/></h4>
                             </div>
                         </div>
                     </div>
@@ -67,8 +67,8 @@
                             <div class="form-group">
 
                                 <label for="tipoDocumento">Tipo de Documento</label>
-                                <select name="tipoDocumento" class="form-control" id="tipoDocumento">
-                                    <option value="1" selected="selected">Seleccione</option>
+                                <select name="tipoDocumento" class="form-control" id="tipoDocumento" required>
+                                    <option value="1" selected="selected" >Seleccione</option>
                                     {% for tipoDoc in tipodocumento %}
                                     <option value="{{ tipoDoc[0] }}">{{ tipoDoc[1] }}</option>
                                     {% endfor %}
@@ -81,7 +81,7 @@
                             <div class="form-group">
 
                                 <label for="motivoAutorizacion">Motivo de autorización</label>
-                                <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion">
+                                <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion" required>
                                     <option value="-1" selected="selected">Seleccione</option>
                                     {% for motivo in motivoautorizacion %}
                                     <option value="{{ motivo[0] }}">{{ motivo[1] }}</option>
@@ -110,7 +110,7 @@
 
                     <div class="form-group">
                         <label for="aPlano">Archivo Plano</label>
-                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2"></textarea>
+                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2" required></textarea>
 
 
                     </div>
@@ -119,7 +119,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombreCompleto">Nombre</label>
-                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" />
+                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" required/>
 
                             </div>
                         </div>
@@ -127,7 +127,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="banco">Banco</label>
-                                <select name="banco" class="form-control" id="banco">
+                                <select name="banco" class="form-control" id="banco" required>
                                     <option value="1" selected="selected">Seleccione</option>
                                     {% for banco in bancos %}
                                     <option value="{{ banco[0] }}">{{ banco[1] }}</option>
@@ -141,7 +141,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dfecha">Fecha Consignación </label>
-                                <input type="date" name="dfecha" id="dFecha" class="form-control">
+                                <input type="date" name="dfecha" id="dFecha" class="form-control" required>
 
                             </div>
                         </div>
@@ -149,7 +149,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="valorConsignacion">Valor de Consignación </label>
-                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control">
+                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control" required>
 
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                             <div class="form-group">
 
                                 <label for="lTramite">Lugar del trámite</label>
-                                <select name="lTramite" id="lTramite" class="form-control">
+                                <select name="lTramite" id="lTramite" class="form-control" required>
                                     <option value="lTramite" selected="selected">Seleccione</option>
                                     <option value="Bogota D.C">Bogota D.C</option>
                                     {% for dtos in departamentos %}
@@ -212,7 +212,8 @@
                 <h5>DF-GCR– <b id="txtOficio"></b> </h5>
                 <h5 id="horaActual">Bogota D.C. 27-08-2024 10:03:25</h5>
                 <p> Señor
-                    <b> Señor <b> Delegados Departamentales de </b><b id="txtTramite"></b>
+                    <b> Señor <b> Delegados Departamentales de </b><b id="txtTramite"></b><br>
+                    <b> De la localidad De  </b><b id="txtTramite2"></b>
                 </p>
                 <p><b>Ref:TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
                 <h6>FECHA DE GENERACIÓN DOCUMENTO  : </h6>
@@ -318,6 +319,10 @@
     
                 $("#lTramite").change(function () {
                     $("#txtTramite").text($("#lTramite option:selected").text());
+                });
+
+                $("#lLocalidad").change(function () {
+                    $("#txtTramite2").text($("#lLocalidad option:selected").text());
                 });
     
                 $("#motivoAutorizacion").change(function () {
@@ -429,7 +434,7 @@
             setInterval(actualizarHora, 1000);
         });
     </script>
-    
+   
 </body>
 
 </html>

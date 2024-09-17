@@ -59,7 +59,17 @@ def add_oficios():
         return redirect(url_for('login'))
 
     fechaTramite = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    numeroFolio = request.form.get('numeroFolio') or None
+    
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT MAX(numeroFolio) FROM oficios")
+    ultimo_folio = cursor.fetchone()[0]
+
+    # Si no hay folios en la tabla, empezamos con 1
+    if ultimo_folio is None:
+        numeroFolio = 1
+    else:
+        numeroFolio = ultimo_folio + 1
+
     numeroDocumento = request.form.get('nDocumento')
     nombre = request.form.get('nombreCompleto')
     fechaConsignacion = request.form.get('dfecha') or None
