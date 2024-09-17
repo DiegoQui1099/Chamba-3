@@ -37,7 +37,9 @@
     </div>
 
     <div class="container">
-        <br><br>
+        <div class="text-right" style="margin: 10px;">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
         <div class="row">
 
             <form id="form1" name="form1" action="/add_oficios" method="POST">
@@ -47,14 +49,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required/>
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required />
                             </div>
 
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="Usuario">Nombre Del Funcionario</label>
-                                <h4><input type="text" name="Usuario" id="Usuario" value="{{ nombre_usuario }}" required/></h4>
+                                <h4 name="Usuario" id="Usuario">{{ nombre_usuario }}</h4>
                             </div>
                         </div>
                     </div>
@@ -68,7 +70,7 @@
 
                                 <label for="tipoDocumento">Tipo de Documento</label>
                                 <select name="tipoDocumento" class="form-control" id="tipoDocumento" required>
-                                    <option value="1" selected="selected" >Seleccione</option>
+                                    <option value="1" selected="selected">Seleccione</option>
                                     {% for tipoDoc in tipodocumento %}
                                     <option value="{{ tipoDoc[0] }}">{{ tipoDoc[1] }}</option>
                                     {% endfor %}
@@ -119,7 +121,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombreCompleto">Nombre</label>
-                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" required/>
+                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto"
+                                    required />
 
                             </div>
                         </div>
@@ -134,7 +137,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                     <div class="row">
 
@@ -149,7 +152,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="valorConsignacion">Valor de Consignación </label>
-                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control" required>
+                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control"
+                                    required>
 
                             </div>
                         </div>
@@ -211,9 +215,11 @@
             <div style="padding:115px 0 0 20px;">
                 <h5>DF-GCR– <b id="txtOficio"></b> </h5>
                 <h5 id="horaActual">Bogota D.C. 27-08-2024 10:03:25</h5>
-                <p> Señor
-                    <b> Señor <b> Delegados Departamentales de </b><b id="txtTramite"></b><br>
-                    <b> De la localidad De  </b><b id="txtTramite2"></b>
+                <p>
+                    <b>Señor Delegados Departamentales de </b><b id="txtTramite"></b><br>
+                    <span id="localidad-text" style="display:none;">
+                        <b>De la localidad De</b> <b id="txtTramite2"></b>
+                    </span>
                 </p>
                 <p><b>Ref:TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
                 <h6>FECHA DE GENERACIÓN DOCUMENTO  : </h6>
@@ -267,7 +273,7 @@
             // Inicialmente, desbloquear solo el campo de documento y bloquear el resto
             toggleFormFields(true);
             $("#nDocumento").prop('disabled', false);
-    
+
             // Evento al escribir en el campo de documento
             $('#nDocumento').keyup(function () {
                 let documento = $(this).val();
@@ -279,17 +285,17 @@
                     toggleFormFields(true);
                 }
             });
-    
+
             // Inicialmente, deshabilitar el campo de localidad
             $("#lLocalidad").prop('disabled', true);
             $("#Usuario").prop('disabled', true);
-    
+
             // Evento de cambio en el campo de trámite
             $('#lTramite').change(function () {
                 // Obtener el valor seleccionado
                 let lugarTramite = $(this).val().trim();
                 console.log("Valor seleccionado en lTramite:", lugarTramite);
-    
+
                 // Comparar el valor seleccionado con el valor esperado
                 if (lugarTramite === 'Bogota D.C') {
                     $("#lLocalidad").prop('disabled', false); // Habilitar el campo de localidad
@@ -297,7 +303,7 @@
                     $("#lLocalidad").prop('disabled', true); // Deshabilitar el campo de localidad
                 }
             });
-    
+
             // Función para habilitar o deshabilitar campos del formulario
             function toggleFormFields(disabled) {
                 $("input").not("#nDocumento, #lLocalidad").prop('disabled', disabled);
@@ -307,16 +313,16 @@
                 $("radio").prop('disabled', disabled);
                 $("label").prop('disabled', disabled);
             }
-    
+
             // Configuración del formulario cuando está desbloqueado
             function configurarFormulario() {
                 // Actualizar campo de texto dinámicamente según el valor ingresado
                 $("#txtDocumento").text($("#nDocumento").val());
-    
+
                 $('#nombreCompleto').keyup(function () {
                     $("#txtNombre").text($(this).val());
                 });
-    
+
                 $("#lTramite").change(function () {
                     $("#txtTramite").text($("#lTramite option:selected").text());
                 });
@@ -324,11 +330,11 @@
                 $("#lLocalidad").change(function () {
                     $("#txtTramite2").text($("#lLocalidad option:selected").text());
                 });
-    
+
                 $("#motivoAutorizacion").change(function () {
                     $("#txtMotivo").text($("#motivoAutorizacion option:selected").text());
                 });
-    
+
                 $("#tipoDocumento").change(function () {
                     var str = $("#tipoDocumento option:selected").text();
                     var valor = $(this).val();
@@ -353,7 +359,7 @@
                     $('#txtTipoDocumento').text(str);
                     $('#valorConsignacion').val(consignacion);
                 });
-    
+
                 $("#banco").change(function () {
                     var str = $("#banco option:selected").text();
                     var valor = $(this).val();
@@ -361,11 +367,11 @@
                     $('#particulaBanco').text(particula);
                     $('#txtBanco').text(str);
                 });
-    
+
                 $('#aPlano').keyup(function () {
                     $("#txtPlano").text($(this).val());
                 });
-    
+
                 // Checkboxes
                 $("#checkboxes").change(function () {
                     var favorite = [];
@@ -374,7 +380,7 @@
                     });
                     $("#txtValidacion").text(favorite.join(", "));
                 });
-    
+
                 $("#madeBy").change(function () {
                     var valor = $(this).val();
                     if (!valor) {
@@ -390,51 +396,66 @@
                     }
                 });
             }
-    
+
             function ajustarTamanoFuente(element) {
                 let fontSize = 16; // Tamaño inicial de la fuente en píxeles
                 element.style.fontSize = `${fontSize}px`;
-    
+
                 // Ajustar el tamaño de la fuente si el texto supera el contenedor
                 while (element.scrollHeight > element.offsetHeight && fontSize > 8) { // Limitar el tamaño mínimo de la fuente a 8px
                     fontSize--;
                     element.style.fontSize = `${fontSize}px`;
                 }
             }
-    
+
             function actualizarTextoPlano() {
                 const txtPlano = document.getElementById("txtPlano");
                 const texto = txtPlano.textContent || txtPlano.innerText;
-    
+
                 // Actualizar el contenido del elemento con el texto ingresado
                 txtPlano.textContent = texto;
-    
+
                 // Ajustar el tamaño de la fuente para que el texto se ajuste al contenedor
                 ajustarTamanoFuente(txtPlano);
             }
-    
+
             // Configurar el evento para actualizar el texto y ajustar el tamaño de la fuente
             document.getElementById("aPlano").addEventListener("keyup", function () {
                 const txtPlano = document.getElementById("txtPlano");
                 txtPlano.textContent = this.value;
                 actualizarTextoPlano();
             });
-    
+
             function actualizarHora() {
                 const ahora = new Date();
                 const opciones = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
                 const fechaHora = ahora.toLocaleString('es-ES', opciones);
                 document.getElementById('horaActual').textContent = `Bogotá D.C. ${fechaHora}`;
             }
-    
+
+
+            //Seleccion de Bogota para cambiar el archivo PDF
+            document.getElementById('lTramite').addEventListener('change', function () {
+                var selectedCity = this.value; // Obtiene el valor seleccionado
+                var localidadText = document.getElementById('localidad-text'); // Elemento que queremos mostrar/ocultar
+
+                if (selectedCity === 'Bogota D.C') {
+                    localidadText.style.display = 'inline'; // Muestra el texto si se selecciona Bogotá D.C.
+                } else {
+                    localidadText.style.display = 'none'; // Oculta el texto si se selecciona cualquier otra ciudad
+                }
+            });
+
+
+
             // Actualizar la hora al cargar la página
             actualizarHora();
-    
+
             // Actualizar la hora cada segundo
             setInterval(actualizarHora, 1000);
         });
     </script>
-   
+
 </body>
 
 </html>
