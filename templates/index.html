@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required />
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
                             </div>
 
                         </div>
@@ -69,7 +69,7 @@
                             <div class="form-group">
 
                                 <label for="tipoDocumento">Tipo de Documento</label>
-                                <select name="tipoDocumento" class="form-control" id="tipoDocumento" required>
+                                <select name="tipoDocumento" class="form-control" id="tipoDocumento">
                                     <option value="1" selected="selected">Seleccione</option>
                                     {% for tipoDoc in tipodocumento %}
                                     <option value="{{ tipoDoc[0] }}">{{ tipoDoc[1] }}</option>
@@ -83,7 +83,7 @@
                             <div class="form-group">
 
                                 <label for="motivoAutorizacion">Motivo de autorización</label>
-                                <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion" required>
+                                <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion">
                                     <option value="-1" selected="selected">Seleccione</option>
                                     {% for motivo in motivoautorizacion %}
                                     <option value="{{ motivo[0] }}">{{ motivo[1] }}</option>
@@ -112,7 +112,7 @@
 
                     <div class="form-group">
                         <label for="aPlano">Archivo Plano</label>
-                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2" required></textarea>
+                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2"></textarea>
 
 
                     </div>
@@ -121,8 +121,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombreCompleto">Nombre</label>
-                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto"
-                                    required />
+                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" />
 
                             </div>
                         </div>
@@ -130,7 +129,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="banco">Banco</label>
-                                <select name="banco" class="form-control" id="banco" required>
+                                <select name="banco" class="form-control" id="banco">
                                     <option value="1" selected="selected">Seleccione</option>
                                     {% for banco in bancos %}
                                     <option value="{{ banco[0] }}">{{ banco[1] }}</option>
@@ -144,7 +143,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dfecha">Fecha Consignación </label>
-                                <input type="date" name="dfecha" id="dFecha" class="form-control" required>
+                                <input type="date" name="dfecha" id="dFecha" class="form-control">
 
                             </div>
                         </div>
@@ -152,8 +151,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="valorConsignacion">Valor de Consignación </label>
-                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control"
-                                    required>
+                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control">
 
                             </div>
                         </div>
@@ -164,7 +162,7 @@
                             <div class="form-group">
 
                                 <label for="lTramite">Lugar del trámite</label>
-                                <select name="lTramite" id="lTramite" class="form-control" required>
+                                <select name="lTramite" id="lTramite" class="form-control">
                                     <option value="lTramite" selected="selected">Seleccione</option>
                                     <option value="Bogota D.C">Bogota D.C</option>
                                     {% for dtos in departamentos %}
@@ -192,81 +190,129 @@
 
                     <div class="form-group">
                         <label for="observacion">Observaciones </label>
-                        <textarea class="form-control" name="observacion" id="observacion" rows="2"
-                            class="form-control"></textarea>
-
+                        <textarea class="form-control" name="observacion" id="observacion" rows="2"></textarea>
                     </div>
-
-
 
                     <div class="form-group">
                         <label id="botonPdf">
                             <button type="submit" class="btn btn-danger" id="btnGuardar">Guardar</button>
                         </label>
-
                     </div>
             </form>
         </div>
 
-
-        <div class="col-md-6 "
+        <div id="pdf-content" class="col-md-6"
             style="border-style:ridge; background-image: url('static/img/plantillaRecaudos.jpg'); width: 560px; height: 750px;">
-
             <div style="padding:115px 0 0 20px;">
                 <h5>DF-GCR– <b id="txtOficio"></b> </h5>
-                <h5 id="horaActual">Bogota D.C. 27-08-2024 10:03:25</h5>
+                <h5 id="horaActual">Bogotá D.C. 27-08-2024 10:03:25</h5>
                 <p>
                     <b>Señor Delegados Departamentales de </b><b id="txtTramite"></b><br>
                     <span id="localidad-text" style="display:none;">
                         <b>De la localidad De</b> <b id="txtTramite2"></b>
                     </span>
                 </p>
-                <p><b>Ref:TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
-                <h6>FECHA DE GENERACIÓN DOCUMENTO  : </h6>
+                <p><b>Ref: TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
+                <h6>FECHA DE GENERACIÓN DOCUMENTO : </h6>
                 <h6>FECHA DE CADUCIDAD DE ESTE DOCUMENTO : </h6>
                 <p>
-
                     <small> Respetados doctores. <br>
-
                         De manera atenta me permito informar que revisados los archivos planos <span
-                            id="particulaBanco"></span> <b id="txtBanco"></b>
-                        se verificó la siguiente consignación: </small>
-
+                            id="particulaBanco"></span>
+                        <b id="txtBanco"></b> se verificó la siguiente consignación:
+                    </small>
+                </p>
                 <table border="1" width="480px" height="100px">
                     <th id="txtPlano" class="txtPlano" style="font-size: 20px;"></th>
                 </table>
                 <input type="text" id="aPlano" class="hidden">
-
-                </p>
                 <p class="text-justify"><small>
-                        Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el tramite de
+                        Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de
                         duplicado de <b id="txtTipoDocumento"> </b> al ciudadano(a):
-                        <b id="txtNombre"> </b> con cupo numérico: <b id="txtDocumento"> </b>
-                        el cual se presenta por <b id="txtMotivo"> </b>, favor recibir la siguiente
-                        documentacion <b id="txtValidacion"> </b>, y verificar en su correo electrónico el código único:
+                        <b id="txtNombre"> </b> con cupo numérico: <b id="txtDocumento"> </b>, el cual se presenta por
+                        <b id="txtMotivo"> </b>, favor recibir la siguiente
+                        documentación <b id="txtValidacion"> </b>, y verificar en su correo electrónico el código único:
                         <b id="txtCodigoUnico"> </b> de autorización de validez del documento, generado en la
-                        coordinación
-                        de recaudos que se enviará a su correo inmediatamente se haya generado este documento.
+                        coordinación de recaudos que se enviará a su correo inmediatamente se haya generado este
+                        documento.
                         Cordialmente,
-                    </small>
-                </p>
-
-
-
+                    </small></p>
                 <p>
                     CARLOS ANDRÉS CONTRERAS GONZÁLEZ<br>
                     Coordinador Control de Recaudos
                 </p>
-
                 <p class="firma" id="firma"></p>
                 <small><input type="hidden" name="ip" id="ip" value="172.23.11.96"></small>
             </div>
-
         </div>
-
     </div>
 
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
+    <script>
+        document.getElementById('form1').addEventListener('submit', function (event) {
+            // Evita que el formulario se envíe automáticamente
+            event.preventDefault();
+
+            // Obtiene el valor del campo de observación
+            var observacion = document.getElementById('observacion').value;
+
+            // Define el contenedor que quieres convertir a PDF
+            var element = document.getElementById('pdf-content');
+            var tableElement = element.querySelector('table');  // Seleccionamos la tabla
+
+            // Guardamos los estilos originales de la tabla
+            var originalBorder = tableElement.getAttribute('border');
+            var originalWidth = tableElement.getAttribute('width');
+            var originalHeight = tableElement.getAttribute('height');
+
+            // Quitamos el borde, ancho y alto solo para la generación del PDF
+            tableElement.removeAttribute('border');
+            tableElement.removeAttribute('width');
+            tableElement.removeAttribute('height');
+
+            // Si hay texto en el campo observación, crea un nuevo párrafo y lo inserta
+            if (observacion.trim() !== '') {
+                var observacionElement = document.createElement('p');
+                observacionElement.innerHTML = "<b>Observación:</b> " + observacion;
+
+                // Inserta las observaciones antes del nombre "CARLOS ANDRÉS CONTRERAS GONZÁLEZ"
+                var nombreElement = element.querySelector('p:last-of-type');
+                element.insertBefore(observacionElement, nombreElement);
+            } else {
+                console.log("No se ingresó ninguna observación.");  // Depuración: Verifica si está vacío
+            }
+
+            // Opciones para html2pdf
+            var options = {
+                margin: [0, 0, 0, 0],
+                filename: 'documento.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'px', format: [560, 750], orientation: 'portrait' }
+            };
+
+            // Usa html2pdf para generar el PDF
+            html2pdf().from(element).set(options).save().then(function () {
+                // Restauramos los atributos originales de la tabla después de generar el PDF
+                tableElement.setAttribute('border', originalBorder);
+                tableElement.setAttribute('width', originalWidth);
+                tableElement.setAttribute('height', originalHeight);
+
+                // Removemos las observaciones después de generar el PDF si se agregaron
+                if (observacion.trim() !== '') {
+                    observacionElement.remove();
+                }
+                console.log("PDF generado exitosamente.");  // Depuración: Confirmación de PDF generado
+            }).catch(function (error) {
+                console.error("Error al generar el PDF:", error);  // Depuración: Muestra el error si hay alguno
+            });
+        });
+
+    </script>
 
     <script>
         $(document).ready(function () {
