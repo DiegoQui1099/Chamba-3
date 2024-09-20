@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required/>
                             </div>
 
                         </div>
@@ -190,8 +190,12 @@
 
                     <div class="form-group">
                         <label for="observacion">Observaciones </label>
-                        <textarea class="form-control" name="observacion" id="observacion" rows="2"></textarea>
+                        <textarea class="form-control" name="observacion" id="observacion" rows="2"
+                            class="form-control"></textarea>
+
                     </div>
+
+
 
                     <div class="form-group">
                         <label id="botonPdf">
@@ -254,11 +258,8 @@
 
     <script>
         document.getElementById('form1').addEventListener('submit', function (event) {
-            // Evita que el formulario se envíe automáticamente
+            // Evita que el formulario se envíe inmediatamente
             event.preventDefault();
-
-            // Obtiene el valor del campo de observación
-            var observacion = document.getElementById('observacion').value;
 
             // Define el contenedor que quieres convertir a PDF
             var element = document.getElementById('pdf-content');
@@ -273,18 +274,6 @@
             tableElement.removeAttribute('border');
             tableElement.removeAttribute('width');
             tableElement.removeAttribute('height');
-
-            // Si hay texto en el campo observación, crea un nuevo párrafo y lo inserta
-            if (observacion.trim() !== '') {
-                var observacionElement = document.createElement('p');
-                observacionElement.innerHTML = "<b>Observación:</b> " + observacion;
-
-                // Inserta las observaciones antes del nombre "CARLOS ANDRÉS CONTRERAS GONZÁLEZ"
-                var nombreElement = element.querySelector('p:last-of-type');
-                element.insertBefore(observacionElement, nombreElement);
-            } else {
-                console.log("No se ingresó ninguna observación.");  // Depuración: Verifica si está vacío
-            }
 
             // Opciones para html2pdf
             var options = {
@@ -302,17 +291,13 @@
                 tableElement.setAttribute('width', originalWidth);
                 tableElement.setAttribute('height', originalHeight);
 
-                // Removemos las observaciones después de generar el PDF si se agregaron
-                if (observacion.trim() !== '') {
-                    observacionElement.remove();
-                }
-                console.log("PDF generado exitosamente.");  // Depuración: Confirmación de PDF generado
-            }).catch(function (error) {
-                console.error("Error al generar el PDF:", error);  // Depuración: Muestra el error si hay alguno
+                // Ahora envía el formulario para guardar los datos en la base de datos
+                document.getElementById('form1').submit();  // Envío manual del formulario
             });
         });
 
     </script>
+
 
     <script>
         $(document).ready(function () {
