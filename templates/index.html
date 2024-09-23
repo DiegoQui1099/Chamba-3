@@ -28,41 +28,6 @@
             height: 100vh;
             margin: 0;
         }
-
-        .alert-index {
-            padding: 1em;
-            margin: 1em 0;
-            border-radius: .25em;
-            border: 1px solid transparent;
-            font-size: 1em;
-            line-height: 1.5;
-            position: relative;
-            border-left-width: 0.25em;
-        }
-
-        .alert-index-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-
-        .alert-index-danger {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .alert-index-warning {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-        }
-
-        .alert-index-info {
-            color: #0c5460;
-            background-color: #d1ecf1;
-            border-color: #bee5eb;
-        }
     </style>
 </head>
 
@@ -70,28 +35,20 @@
     <div>
         {% include 'header.html' %}
     </div>
-    <div class="container"></div>
-    <div class="text-right" style="margin: 10px;">
-        <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
-    </div>
+
     <div class="container">
-        <br><br>
+        <div class="text-right" style="margin: 10px;">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
         <div class="row">
 
             <form id="form1" name="form1" action="/add_oficios" method="POST">
                 <div class="col-md-6">
                     <div class="row">
-                        {% with messages = get_flashed_messages(with_categories=True) %}
-                        {% if messages %}
-                        <div class="alert-index alert-index-{{ messages[0][0] }}" role="alert">
-                            {{ messages[0][1] }}
-                        </div>
-                        {% endif %}
-                        {% endwith %}
-                        <br>
+
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="nDocumento">Número de DocumQento</label>
+                                <label for="nDocumento">Número de Documento</label>
                                 <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
                             </div>
 
@@ -99,7 +56,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="Usuario">Nombre Del Funcionario</label>
-                                <h4><input type="text" name="Usuario" id="Usuario" value="{{ nombre_usuario }}" /></h4>
+                                <h4 name="Usuario" id="Usuario">{{ nombre_usuario }}</h4>
                             </div>
                         </div>
                     </div>
@@ -206,7 +163,8 @@
 
                                 <label for="lTramite">Lugar del trámite</label>
                                 <select name="lTramite" id="lTramite" class="form-control">
-                                    <option value="-1" selected="selected">Seleccione</option>
+                                    <option value="lTramite" selected="selected">Seleccione</option>
+                                    <option value="Bogota D.C">Bogota D.C</option>
                                     {% for dtos in departamentos %}
                                     <option value="{{ dtos[0] }}">{{ dtos[1] }}</option>
                                     {% endfor %}
@@ -232,77 +190,61 @@
 
                     <div class="form-group">
                         <label for="observacion">Observaciones </label>
-                        <textarea class="form-control" name="observacion" id="observacion" rows="2"
-                            class="form-control"></textarea>
-
+                        <textarea class="form-control" name="observacion" id="observacion" rows="2"></textarea>
                     </div>
-
-
 
                     <div class="form-group">
                         <label id="botonPdf">
                             <button type="submit" class="btn btn-danger" id="btnGuardar">Guardar</button>
                         </label>
-
                     </div>
             </form>
         </div>
 
-
-        <div class="col-md-6 "
+        <div id="pdf-content" class="col-md-6"
             style="border-style:ridge; background-image: url('static/img/plantillaRecaudos.jpg'); width: 560px; height: 750px;">
-
             <div style="padding:115px 0 0 20px;">
                 <h5>DF-GCR– <b id="txtOficio"></b> </h5>
-                <h5 id="horaActual">Bogota D.C. 27-08-2024 10:03:25</h5>
-                <p> Señor
-                    <b> Señor <b> Delegados Departamentales de </b><b id="txtTramite"></b>
+                <h5 id="horaActual">Bogotá D.C. 27-08-2024 10:03:25</h5>
+                <p>
+                    <b>Señor Delegados Departamentales de </b><b id="txtTramite"></b><br>
+                    <span id="localidad-text" style="display:none;">
+                        <b>De la localidad De</b> <b id="txtTramite2"></b>
+                    </span>
                 </p>
-                <p><b>Ref:TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
-                <h6>FECHA DE GENERACIÓN DOCUMENTO  : </h6>
+                <p><b>Ref: TRÁMITE DE DUPLICADO DE </b> <b id="txtTipoDocumento"></b></p>
+                <h6>FECHA DE GENERACIÓN DOCUMENTO : </h6>
                 <h6>FECHA DE CADUCIDAD DE ESTE DOCUMENTO : </h6>
                 <p>
-
                     <small> Respetados doctores. <br>
-
                         De manera atenta me permito informar que revisados los archivos planos <span
-                            id="particulaBanco"></span> <b id="txtBanco"></b>
-                        se verificó la siguiente consignación: </small>
-
+                            id="particulaBanco"></span>
+                        <b id="txtBanco"></b> se verificó la siguiente consignación:
+                    </small>
+                </p>
                 <table border="1" width="480px" height="100px">
                     <th id="txtPlano" class="txtPlano" style="font-size: 20px;"></th>
                 </table>
                 <input type="text" id="aPlano" class="hidden">
-
-                </p>
                 <p class="text-justify"><small>
-                        Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el tramite de
+                        Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de
                         duplicado de <b id="txtTipoDocumento"> </b> al ciudadano(a):
-                        <b id="txtNombre"> </b> con cupo numérico: <b id="txtDocumento"> </b>
-                        el cual se presenta por <b id="txtMotivo"> </b>, favor recibir la siguiente
-                        documentacion <b id="txtValidacion"> </b>, y verificar en su correo electrónico el código único:
+                        <b id="txtNombre"> </b> con cupo numérico: <b id="txtDocumento"> </b>, el cual se presenta por
+                        <b id="txtMotivo"> </b>, favor recibir la siguiente
+                        documentación <b id="txtValidacion"> </b>, y verificar en su correo electrónico el código único:
                         <b id="txtCodigoUnico"> </b> de autorización de validez del documento, generado en la
-                        coordinación
-                        de recaudos que se enviará a su correo inmediatamente se haya generado este documento.
+                        coordinación de recaudos que se enviará a su correo inmediatamente se haya generado este
+                        documento.
                         Cordialmente,
-                    </small>
-                </p>
-
-
-
+                    </small></p>
                 <p>
                     CARLOS ANDRÉS CONTRERAS GONZÁLEZ<br>
                     Coordinador Control de Recaudos
                 </p>
-
                 <p class="firma" id="firma"></p>
                 <small><input type="hidden" name="ip" id="ip" value="172.23.11.96"></small>
             </div>
-
         </div>
-
-    </div>
-
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -312,13 +254,20 @@
 
             // Capturar los valores del formulario
             var nDocumento = document.getElementById("nDocumento").value;
-            var Usuario = document.getElementById("Usuario").value;
+            const Usuario = document.getElementById("Usuario").textContent;
             var tipoDocumento = document.getElementById("tipoDocumento").options[document.getElementById("tipoDocumento").selectedIndex].text;
             var motivoAutorizacion = document.getElementById("motivoAutorizacion").options[document.getElementById("motivoAutorizacion").selectedIndex].text;
+            // Capturar aPlano y aplicar límite
             var aPlano = document.getElementById("aPlano").value;
+            var maxLength = 3300; // Definir el límite de caracteres
+            if (aPlano.length > maxLength) {
+                aPlano = aPlano.substring(0, maxLength); // Truncar aPlano si excede el límite
+                alert(`El texto ha sido truncado a ${maxLength} caracteres.`); // Opcional: alerta al usuario
+            }
             var nombreCompleto = document.getElementById("nombreCompleto").value;
             var banco = document.getElementById("banco").options[document.getElementById("banco").selectedIndex].text;
             var lTramite = document.getElementById("lTramite").options[document.getElementById("lTramite").selectedIndex].text;
+            var lLocalidad = document.getElementById("lLocalidad").options[document.getElementById("lLocalidad").selectedIndex].text;
             var observacion = document.getElementById("observacion").value;
 
             // Crear un nuevo documento PDF
@@ -334,6 +283,7 @@
             function addNewPage() {
                 doc.addPage();
                 addTemplate(); // Agregar la plantilla a la nueva página
+                ajusteVertical = 20; // Comenzar 30 mm desde el borde superior
             }
 
             // Agregar la plantilla de fondo en la primera página
@@ -348,7 +298,7 @@
             const pageHeight = doc.internal.pageSize.getHeight();
             const leftMargin = 20; // Establecer el margen izquierdo para el contenido principal
             const rightMargin = 20;
-            let ajusteVertical = 50; // Iniciar más abajo para evitar que se solape con el logo
+            let ajusteVertical = 45; // Iniciar más abajo para evitar que se solape con el logo
 
             // Bloque de texto alineado a la izquierda en negrita
             doc.setFont("times", "bold"); // Cambiar a fuente en negrita
@@ -362,10 +312,18 @@
             doc.setFont("times", "normal");
 
             // Detalles del destinatario alineados a la izquierda
-            doc.text(`Señor`, leftMargin, ajusteVertical);  // "Señor" en fuente normal
+            doc.text(`Señor`, leftMargin, ajusteVertical); // "Señor" en fuente normal
             doc.setFont("times", "bold"); // Cambiar a fuente en negrita para el resto del texto
-            doc.text(` Registrador(a) auxiliar de la localidad de ${lTramite}`, leftMargin + doc.getTextWidth("Señor "), ajusteVertical);
+
+            // Verifica si el trámite es en Bogotá
+            if (lTramite === "Bogotá D.C") {
+                doc.text(`Registrador(a) auxiliar de la localidad de ${lLocalidad} de ${lTramite}`, leftMargin + doc.getTextWidth("Señor "), ajusteVertical);
+            } else {
+                doc.text(`Delegados Departamentales de ${lTramite}`, leftMargin + doc.getTextWidth("Señor "), ajusteVertical);
+            }
             ajusteVertical += 8;
+
+
 
             // Texto en fuente normal
             doc.setFont("times", "normal"); // Cambiar a fuente normal
@@ -407,23 +365,36 @@
 
             // Volver a fuente normal para el texto final
             doc.setFont('times', 'normal');
-            
+
             // Texto final que incluye "se verificó la siguiente consignación"
             let bodyTextFinal = `se verificó la siguiente consignación: ${aPlano}`;
 
             // **Nuevo cambio**: Hacer que el texto comience desde el margen izquierdo
-            ajusteVertical += 5; // Mover a la siguiente línea
-            let bodyTextFinalLines = doc.splitTextToSize(bodyTextFinal, pageWidth - leftMargin - rightMargin); // Ajuste al ancho completo
+            ajusteVertical += 4; // Mover a la siguiente línea
+
+            // Reducir el ancho máximo de las líneas para limitar la cantidad de líneas, eliminando el equivalente a 6 líneas
+            let lineHeightReduction = 6 * 5; // 6 líneas, asumiendo que cada línea ocupa 5 unidades verticales
+            let bodyTextFinalLines = doc.splitTextToSize(bodyTextFinal, pageWidth - leftMargin - rightMargin);
+
+            // Verificar cuántas líneas fueron generadas y reducir el ajuste vertical
+            if (bodyTextFinalLines.length > 6) {
+                bodyTextFinalLines = bodyTextFinalLines.slice(0, bodyTextFinalLines.length - 6); // Eliminar 6 líneas del final
+            }
 
             // Dibujar las líneas del texto final, comenzando desde el margen izquierdo
             doc.text(bodyTextFinalLines, leftMargin, ajusteVertical);
 
             // Ajustar el espacio vertical según el número de líneas generadas
-            ajusteVertical += bodyTextFinalLines.length * 8;
+            ajusteVertical += bodyTextFinalLines.length * 5;
+
+            if (ajusteVertical + 10 > pageHeight - 10) {
+                addNewPage();
+                ajusteVertical = 50; // Reiniciar ajuste vertical para la nueva página
+            }
 
 
             // Detalles adicionales del proceso y texto final combinado
-            let bodyText2 = `Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico: ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. En los casos de pérdida del comprobante de pago, el ciudadano garantiza la veracidad de la información y certifica la no utilización en trámites anteriores del soporte de pago. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente se haya generado el documento.`;
+            let bodyText2 = `Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico: ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente se haya generado el documento.`;
 
             // Unir ambos textos en uno solo y ajustarlo a la página
             let bodyText2Lines = doc.splitTextToSize(bodyText2, pageWidth - leftMargin - rightMargin);
@@ -431,16 +402,16 @@
             // Imprimir el texto en el PDF y agregar nueva página si es necesario
             if (ajusteVertical + bodyText2Lines.length * 5 > pageHeight - 20) {
                 addNewPage();
-                ajusteVertical = 10; // Reiniciar ajuste vertical para la nueva página
+                ajusteVertical = 30; // Reiniciar ajuste vertical para la nueva página
             }
             doc.text(bodyText2Lines, leftMargin, ajusteVertical);
             ajusteVertical += bodyText2Lines.length * 5;  // Ajustar el espacio vertical según el número de líneas generadas
 
             // Firma y detalles finales alineados a la izquierda
-            doc.setFontSize(10);
+            doc.setFontSize(12);
 
-            // Agregar una nueva página si es necesario
-            if (ajusteVertical + 60 > pageHeight - 20) {
+            // Agregar una nueva página si es necesarioS
+            if (ajusteVertical + 40 > pageHeight - 20) {
                 addNewPage();
                 ajusteVertical = 50; // Reiniciar ajuste vertical para la nueva página
             }
@@ -448,9 +419,21 @@
             // Agregar un espacio adicional antes de "Cordialmente"
             ajusteVertical += 16;
             doc.text('Cordialmente,', leftMargin, ajusteVertical); // Cambiado para alineación a la izquierda
-            ajusteVertical += 10;
-            doc.text(`Observaciones: ${observacion}`, leftMargin, ajusteVertical);
-            ajusteVertical += 10; // Espacio más grande después de "Cordialmente"
+            // Texto de observaciones
+            let bodyText3 = `Observaciones: ${observacion}`;
+
+            // Aumentar el espacio vertical para dejar más espacio antes del texto de observaciones
+            ajusteVertical += 7;
+
+            // Dividir el texto en líneas que se ajusten al ancho disponible de la página
+            let bodyText3Lines = doc.splitTextToSize(bodyText3, pageWidth - leftMargin - rightMargin);
+
+            // Dibujar cada línea de texto en el PDF
+            doc.text(bodyText3Lines, leftMargin, ajusteVertical);
+
+            // Ajustar el espacio vertical después de imprimir el texto
+            ajusteVertical += bodyText3Lines.length * 5;
+            ajusteVertical += 7;
             doc.text('CARLOS ANDRÉS CONTRERAS GONZÁLEZ', leftMargin, ajusteVertical); // Alineado a la izquierda
 
             ajusteVertical += 10; // Espacio después del nombre
@@ -464,9 +447,30 @@
 
             // Detalles del usuario que lo elaboró alineados a la izquierda
             doc.text(`Elaboro: ${Usuario}`, leftMargin, ajusteVertical); // Alineado a la izquierda
-            ajusteVertical += 10;
+            ajusteVertical += 6;
             doc.text(`Aprobó: Carlos Andrés Contreras González`, leftMargin, ajusteVertical);
-            ajusteVertical += 10;
+            ajusteVertical += 25;
+
+            // Definir tamaño de fuente más pequeño
+            doc.setFontSize(7);
+
+            // Obtener el ancho del texto para 
+            const text = `Ley 527 de 1999, Articulo 28 – “ATRIBUTOS JURIDICOS DE UNA FIRMA DIGITAL” Parágrafo. “El uso de una firma digital tendrá la misma fuerza y efectos que el uso de una
+            sfirma manuscrita...” Artículo declarado EXEQUIBLE por la Corte Constitucional mediante Sentencia C-662-00 de 8 de junio de 2000`;
+            const textWidth = doc.getTextWidth(text);
+
+            // Imprimir el texto centrado
+            doc.text(text, leftMargin, ajusteVertical);
+
+            // Actualizar la posición vertical para la siguiente línea
+            ajusteVertical += 15;
+
+            // Si la posición vertical es mayor que el borde inferior, crear una nueva página
+            if (ajusteVertical > doc.internal.pageSize.getHeight() - 20) {
+                doc.addPage();
+                ajusteVertical = 1; // Reiniciar el ajuste vertical en la nueva página
+            }
+
             // Descargar el archivo PDF
             doc.save("documento_oficio.pdf");
 
@@ -498,25 +502,22 @@
                 }
             });
 
-            // Evento de cambio en el campo de tramite
-            $(document).ready(function () {
-                // Inicialmente, deshabilitar el campo de localidad
-                $("#lLocalidad").prop('disabled', true);
-                $("#Usuario").prop('disabled', true);
+            // Inicialmente, deshabilitar el campo de localidad
+            $("#lLocalidad").prop('disabled', true);
+            $("#Usuario").prop('disabled', true);
 
-                // Evento de cambio en el campo de trámite
-                $('#lTramite').change(function () {
-                    // Obtener el valor seleccionado
-                    let lugarTramite = $(this).val().trim();
-                    console.log("Valor seleccionado en lTramite:", lugarTramite);
+            // Evento de cambio en el campo de trámite
+            $('#lTramite').change(function () {
+                // Obtener el valor seleccionado
+                let lugarTramite = $(this).val().trim();
+                console.log("Valor seleccionado en lTramite:", lugarTramite);
 
-                    // Comparar el valor seleccionado con el valor esperado
-                    if (lugarTramite === 'Cundinamarca') {
-                        $("#lLocalidad").prop('disabled', false); // Habilitar el campo de localidad
-                    } else {
-                        $("#lLocalidad").prop('disabled', true); // Deshabilitar el campo de localidad
-                    }
-                });
+                // Comparar el valor seleccionado con el valor esperado
+                if (lugarTramite === 'Bogota D.C') {
+                    $("#lLocalidad").prop('disabled', false); // Habilitar el campo de localidad
+                } else {
+                    $("#lLocalidad").prop('disabled', true); // Deshabilitar el campo de localidad
+                }
             });
 
             // Función para habilitar o deshabilitar campos del formulario
@@ -540,6 +541,10 @@
 
                 $("#lTramite").change(function () {
                     $("#txtTramite").text($("#lTramite option:selected").text());
+                });
+
+                $("#lLocalidad").change(function () {
+                    $("#txtTramite2").text($("#lLocalidad option:selected").text());
                 });
 
                 $("#motivoAutorizacion").change(function () {
@@ -643,6 +648,21 @@
                 const fechaHora = ahora.toLocaleString('es-ES', opciones);
                 document.getElementById('horaActual').textContent = `Bogotá D.C. ${fechaHora}`;
             }
+
+
+            //Seleccion de Bogota para cambiar el archivo PDF
+            document.getElementById('lTramite').addEventListener('change', function () {
+                var selectedCity = this.value; // Obtiene el valor seleccionado
+                var localidadText = document.getElementById('localidad-text'); // Elemento que queremos mostrar/ocultar
+
+                if (selectedCity === 'Bogota D.C') {
+                    localidadText.style.display = 'inline'; // Muestra el texto si se selecciona Bogotá D.C.
+                } else {
+                    localidadText.style.display = 'none'; // Oculta el texto si se selecciona cualquier otra ciudad
+                }
+            });
+
+
 
             // Actualizar la hora al cargar la página
             actualizarHora();

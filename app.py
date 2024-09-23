@@ -55,16 +55,26 @@ def add_oficios():
     # Recupera el idUser desde la sesión
     idUser = session.get('idUser')
     if idUser is None:
-        flash('No estás autenticado. Inicia sesión para continuar.','login-success')
-        return redirect(url_for('index'))
+        flash('No estás autenticado. Inicia sesión para continuar.')
+        return redirect(url_for('login'))
 
-    fechaTramite = request.form.get('fechaTramite') or None
-    numeroFolio = request.form.get('numeroFolio') or None
+    fechaTramite = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT MAX(numeroFolio) FROM oficios")
+    ultimo_folio = cursor.fetchone()[0]
+
+    # Si no hay folios en la tabla, empezamos con 1
+    if ultimo_folio is None:
+        numeroFolio = 1
+    else:
+        numeroFolio = ultimo_folio + 1
+
     numeroDocumento = request.form.get('nDocumento')
-    nombre = request.form.get('Usuario')
+    nombre = request.form.get('nombreCompleto')
     fechaConsignacion = request.form.get('dfecha') or None
     valorConsignacion = request.form.get('valorConsignacion') or None
-    docCompleta = request.form.get('') or None
+    docCompleta = 1
     codigoUnico = request.form.get('codigoUnico') or None
     archivoPlano = request.form.get('aPlano') or None
     observacion = request.form.get('observacion') or None
@@ -80,6 +90,10 @@ def add_oficios():
     # Si validacion está vacío, asignar None
     validacion = None if not validacion else ','.join(validacion)
     
+    # Si se selecciona "Bogotá D.C." o "Seleccione", asignamos None a departamento
+    if departamento == "Bogota D.C" or departamento == "":  
+        departamento = None
+
     # Usa mysql.connection.cursor() para obtener el cursor
     cursor = mysql.connection.cursor()
     
