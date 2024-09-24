@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" />
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required />
                             </div>
 
                         </div>
@@ -274,20 +274,36 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
+            // Dimensiones originales del JPG
+            const originalWidth = 600;  // Ancho original en píxeles
+            const originalHeight = 860;  // Alto original en píxeles
+
+            // Dimensiones del documento A4 en mm
+            const a4Width = 210;  // Ancho A4
+            const a4Height = 297; // Alto A4
+
+            // Calcular la escala para ajustar la imagen al tamaño A4
+            const scaleX = a4Width / originalWidth;
+            const scaleY = a4Height / originalHeight;
+            const scale = Math.min(scaleX, scaleY); // Usar la menor escala para mantener la relación de aspecto
+
+            // Nuevas dimensiones escaladas
+            const scaledWidth = originalWidth * scale;
+            const scaledHeight = originalHeight * scale;
+
             // Función para agregar la plantilla a una página
             function addTemplate() {
-                doc.addImage('/static/img/plantillaRecaudos.jpg', 'JPEG', 0, 0, 210, 297); // Ajustar las dimensiones para el tamaño A4
+                // Centrar la imagen en la página
+                const xOffset = (a4Width - scaledWidth) / 2;
+                const yOffset = (a4Height - scaledHeight) / 2;
+
+                // Agregar la imagen con las dimensiones escaladas
+                doc.addImage('/static/img/plantillaRecaudos2.jpg', 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
             }
 
-            // Función para crear una nueva página con la plantilla
-            function addNewPage() {
-                doc.addPage();
-                addTemplate(); // Agregar la plantilla a la nueva página
-                ajusteVertical = 20; // Comenzar 30 mm desde el borde superior
-            }
-
-            // Agregar la plantilla de fondo en la primera página
+            // Llamar a la función para agregar la plantilla
             addTemplate();
+
 
             // Configurar la fuente y el tamaño de texto
             doc.setFont("times", "normal");
@@ -309,37 +325,77 @@
             ajusteVertical += 10;
 
             // Volver a fuente normal
-            doc.setFont("times", "normal");
-
+            doc.setFont("times", "bold");
             // Detalles del destinatario alineados a la izquierda
-            doc.text(`Señor`, leftMargin, ajusteVertical); // "Señor" en fuente normal
-            doc.setFont("times", "bold"); // Cambiar a fuente en negrita para el resto del texto
+            doc.text(`Señor`, leftMargin, ajusteVertical);
+            doc.setFont("times", "normal"); // Cambiar a fuente en negrita para el resto del texto
 
             // Verifica si el trámite es en Bogotá
-            if (lTramite === "Bogotá D.C") {
-                doc.text(`Registrador(a) auxiliar de la localidad de ${lLocalidad} de ${lTramite}`, leftMargin + doc.getTextWidth("Señor "), ajusteVertical);
+            if (lTramite === "Bogota D.C") {
+                doc.text(`Registrador(a) auxiliar de la localidad de ${lLocalidad}`, leftMargin + doc.getTextWidth("Señor  "), ajusteVertical);
             } else {
-                doc.text(`Delegados Departamentales de ${lTramite}`, leftMargin + doc.getTextWidth("Señor "), ajusteVertical);
+                doc.setFont("times", "bold");
+                doc.text(`Señores`, leftMargin, ajusteVertical);
+                doc.setFont("times", "normal");
+                doc.text(`Delegados Departamentales de ${lTramite}`, leftMargin + doc.getTextWidth("Señores  "), ajusteVertical);
             }
             ajusteVertical += 8;
 
 
 
-            // Texto en fuente normal
+            // Texto en fuente normal para todo, excepto "Ref:"
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita solo para "Ref:"
+            doc.text(`Ref:`, leftMargin, ajusteVertical); // "Ref:" en negrita
+
+            // Cambiar a fuente normal para el resto del texto
             doc.setFont("times", "normal"); // Cambiar a fuente normal
-            doc.text(`Ref: TRÁMITE DE DUPLICADO DE `, leftMargin, ajusteVertical); // "Ref: TRÁMITE DE DUPLICADO DE" en fuente normal
+            doc.text(` Trámite De Duplicado De ${tipoDocumento.toUpperCase()}`, leftMargin + doc.getTextWidth("Ref:"), ajusteVertical); // "TRÁMITE DE DUPLICADO DE" en normal
 
-            // Cambiar a fuente en negrita para tipoDocumento
-            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
-            doc.text(`${tipoDocumento}`, leftMargin + doc.getTextWidth("Ref: TRÁMITE DE DUPLICADO DE"), ajusteVertical); // "tipoDocumento" en negrita
             doc.setFont("times", "normal"); // Volver a fuente normal
-            ajusteVertical += 10;
-
-            // Fechas alineadas a la izquierda en negrita
-            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
-            doc.text(`FECHA DE GENERACIÓN DOCUMENTO: ${new Date().toLocaleString()}`, leftMargin, ajusteVertical);
             ajusteVertical += 8;
-            doc.text('FECHA DE CADUCIDAD DE ESTE DOCUMENTO: 30-08-2024', leftMargin, ajusteVertical);
+
+            // Texto "FECHA DE GENERACIÓN DOCUMENTO" en negrita
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
+            doc.text(`Fecha De Generación Documento: `, leftMargin, ajusteVertical);
+
+            // Texto de la fecha en estilo normal con un pequeño espacio
+            doc.setFont("times", "normal"); // Volver a fuente normal
+            let espacio = 5; // Espacio adicional entre el texto y la fecha
+
+            // Formato de fecha sin segundos
+            let fechaGeneracion = new Date().toLocaleDateString(); // Solo la fecha
+            let horaGeneracion = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Solo horas y minutos
+
+            doc.text(`${fechaGeneracion} ${horaGeneracion}`, leftMargin + doc.getTextWidth('Fecha De Generación Documento: ') + espacio, ajusteVertical);
+
+            ajusteVertical += 8;
+
+            // Función para formatear la fecha en formato dd-mm-yyyy
+            function formatDate(date) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            // Obtener la fecha actual
+            const currentDate = new Date();
+
+            // Calcular la fecha de caducidad sumando 8 días
+            const expirationDate = new Date(currentDate);
+            expirationDate.setDate(currentDate.getDate() + 8);
+
+            // Formatear la fecha de caducidad
+            const formattedExpirationDate = formatDate(expirationDate);
+
+            // Texto "FECHA DE CADUCIDAD DE ESTE DOCUMENTO" en negrita
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
+            doc.text(`Fecha De Caducidad De Este Documento: `, leftMargin, ajusteVertical);
+
+            // Texto de la fecha en estilo normal con un pequeño espacio
+            doc.setFont("times", "normal"); // Volver a fuente normal
+            doc.text(formattedExpirationDate, leftMargin + doc.getTextWidth('Fecha De Caducidad De Este Documento: ') + espacio, ajusteVertical);
+
             ajusteVertical += 10;
 
             // Volver a fuente normal
@@ -360,7 +416,7 @@
             let anchoTextoInicial = doc.getTextWidth(bodyTextInicial);
 
             // Texto del banco en negrita
-            doc.setFont('times', 'bold');
+            doc.setFont('times', 'bold'); // Cambié a 'bold' para que se vea en negrita
             doc.text(`${banco}`, leftMargin + anchoTextoInicial, ajusteVertical); // Texto en negrita
 
             // Volver a fuente normal para el texto final
@@ -369,10 +425,10 @@
             // Texto final que incluye "se verificó la siguiente consignación"
             let bodyTextFinal = `se verificó la siguiente consignación: ${aPlano}`;
 
-            // **Nuevo cambio**: Hacer que el texto comience desde el margen izquierdo
-            ajusteVertical += 4; // Mover a la siguiente línea
+            // Mover a la siguiente línea
+            ajusteVertical += 4;
 
-            // Reducir el ancho máximo de las líneas para limitar la cantidad de líneas, eliminando el equivalente a 6 líneas
+            // Reducir el ancho máximo de las líneas para limitar la cantidad de líneas
             let lineHeightReduction = 6 * 5; // 6 líneas, asumiendo que cada línea ocupa 5 unidades verticales
             let bodyTextFinalLines = doc.splitTextToSize(bodyTextFinal, pageWidth - leftMargin - rightMargin);
 
@@ -381,49 +437,37 @@
                 bodyTextFinalLines = bodyTextFinalLines.slice(0, bodyTextFinalLines.length - 6); // Eliminar 6 líneas del final
             }
 
-            // Dibujar las líneas del texto final, comenzando desde el margen izquierdo
+            // Dibujar las líneas del texto final
             doc.text(bodyTextFinalLines, leftMargin, ajusteVertical);
 
             // Ajustar el espacio vertical según el número de líneas generadas
-            ajusteVertical += bodyTextFinalLines.length * 5;
+            ajusteVertical += bodyTextFinalLines.length * 6;
 
-            if (ajusteVertical + 10 > pageHeight - 10) {
-                addNewPage();
-                ajusteVertical = 50; // Reiniciar ajuste vertical para la nueva página
-            }
+            // Asegúrate de que el siguiente texto no se superponga
+            ajusteVertical += 8; // Agregar espacio entre bodyTextFinal y bodyText2
 
-
+            doc.setFontSize(12);
             // Detalles adicionales del proceso y texto final combinado
             let bodyText2 = `Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico: ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente se haya generado el documento.`;
 
-            // Unir ambos textos en uno solo y ajustarlo a la página
-            let bodyText2Lines = doc.splitTextToSize(bodyText2, pageWidth - leftMargin - rightMargin);
+            // Ajustar el texto bodyText2 a la página
+            doc.text(bodyText2, leftMargin, ajusteVertical, { align: "justify", maxWidth: pageWidth - leftMargin - rightMargin });
 
-            // Imprimir el texto en el PDF y agregar nueva página si es necesario
-            if (ajusteVertical + bodyText2Lines.length * 5 > pageHeight - 20) {
-                addNewPage();
-                ajusteVertical = 30; // Reiniciar ajuste vertical para la nueva página
-            }
-            doc.text(bodyText2Lines, leftMargin, ajusteVertical);
-            ajusteVertical += bodyText2Lines.length * 5;  // Ajustar el espacio vertical según el número de líneas generadas
 
             // Firma y detalles finales alineados a la izquierda
             doc.setFontSize(12);
 
-            // Agregar una nueva página si es necesarioS
-            if (ajusteVertical + 40 > pageHeight - 20) {
-                addNewPage();
-                ajusteVertical = 50; // Reiniciar ajuste vertical para la nueva página
-            }
-
             // Agregar un espacio adicional antes de "Cordialmente"
-            ajusteVertical += 16;
+            ajusteVertical += 40;
             doc.text('Cordialmente,', leftMargin, ajusteVertical); // Cambiado para alineación a la izquierda
             // Texto de observaciones
             let bodyText3 = `Observaciones: ${observacion}`;
 
-            // Aumentar el espacio vertical para dejar más espacio antes del texto de observaciones
-            ajusteVertical += 7;
+            // Firma alineada a la izquierda
+            ajusteVertical += 10;
+            doc.addImage('/static/img/firma.png', 'PNG', leftMargin, ajusteVertical, 35, 15); // Firma alineada a la izquierda
+
+            ajusteVertical += 20; // Espacio después de la firma
 
             // Dividir el texto en líneas que se ajusten al ancho disponible de la página
             let bodyText3Lines = doc.splitTextToSize(bodyText3, pageWidth - leftMargin - rightMargin);
@@ -439,17 +483,13 @@
             ajusteVertical += 10; // Espacio después del nombre
             doc.text('Coordinador Control de Recaudos', leftMargin, ajusteVertical); // Alineado a la izquierda
 
-            // Firma alineada a la izquierda
-            ajusteVertical += 10; // Espacio más grande antes de la firma
-            doc.addImage('/static/img/image.png', 'PNG', leftMargin, ajusteVertical, 50, 15); // Firma alineada a la izquierda
-
-            ajusteVertical += 20; // Espacio después de la firma
+            ajusteVertical += 10;
 
             // Detalles del usuario que lo elaboró alineados a la izquierda
             doc.text(`Elaboro: ${Usuario}`, leftMargin, ajusteVertical); // Alineado a la izquierda
             ajusteVertical += 6;
             doc.text(`Aprobó: Carlos Andrés Contreras González`, leftMargin, ajusteVertical);
-            ajusteVertical += 25;
+            ajusteVertical += 18;
 
             // Definir tamaño de fuente más pequeño
             doc.setFontSize(7);
@@ -464,13 +504,6 @@
 
             // Actualizar la posición vertical para la siguiente línea
             ajusteVertical += 15;
-
-            // Si la posición vertical es mayor que el borde inferior, crear una nueva página
-            if (ajusteVertical > doc.internal.pageSize.getHeight() - 20) {
-                doc.addPage();
-                ajusteVertical = 1; // Reiniciar el ajuste vertical en la nueva página
-            }
-
             // Descargar el archivo PDF
             doc.save("documento_oficio.pdf");
 
@@ -671,7 +704,16 @@
             setInterval(actualizarHora, 1000);
         });
     </script>
+    <script>
+        document.getElementById('form1').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evita el envío por defecto del formulario
 
+            // Aquí podrías añadir tu lógica de validación o envío por AJAX si es necesario
+            // Si el envío es exitoso, muestra el mensaje
+            alert('PDF generado exitosamente.');
+
+        });
+    </script>
 
 </body>
 
