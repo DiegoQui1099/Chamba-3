@@ -259,7 +259,7 @@
             var motivoAutorizacion = document.getElementById("motivoAutorizacion").options[document.getElementById("motivoAutorizacion").selectedIndex].text;
             // Capturar aPlano y aplicar límite
             var aPlano = document.getElementById("aPlano").value;
-            var maxLength = 3300; // Definir el límite de caracteres
+            var maxLength = 500; // Definir el límite de caracteres
             if (aPlano.length > maxLength) {
                 aPlano = aPlano.substring(0, maxLength); // Truncar aPlano si excede el límite
                 alert(`El texto ha sido truncado a ${maxLength} caracteres.`); // Opcional: alerta al usuario
@@ -406,7 +406,7 @@
 
             // Texto inicial alineado a la izquierda
             doc.text('Respetados doctores.', leftMargin, ajusteVertical); // Texto normal
-            ajusteVertical += 8; // Espacio después del texto inicial
+            ajusteVertical += 6; // Espacio después del texto inicial
 
             // Texto inicial antes de la parte en negrita
             let bodyTextInicial = 'De manera atenta me permito informar que revisados los archivos planos del ';
@@ -441,10 +441,10 @@
             doc.text(bodyTextFinalLines, leftMargin, ajusteVertical);
 
             // Ajustar el espacio vertical según el número de líneas generadas
-            ajusteVertical += bodyTextFinalLines.length * 6;
+            ajusteVertical += bodyTextFinalLines.length * 4;
 
             // Asegúrate de que el siguiente texto no se superponga
-            ajusteVertical += 8; // Agregar espacio entre bodyTextFinal y bodyText2
+            ajusteVertical += 5; // Agregar espacio entre bodyTextFinal y bodyText2
 
             doc.setFontSize(12);
             // Detalles adicionales del proceso y texto final combinado
@@ -458,7 +458,7 @@
             doc.setFontSize(12);
 
             // Agregar un espacio adicional antes de "Cordialmente"
-            ajusteVertical += 40;
+            ajusteVertical += 30;
             doc.text('Cordialmente,', leftMargin, ajusteVertical); // Cambiado para alineación a la izquierda
             // Texto de observaciones
             let bodyText3 = `Observaciones: ${observacion}`;
