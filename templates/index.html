@@ -276,15 +276,7 @@
                 alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
             }
             var idOficio = parseInt(document.getElementById("id_oficio").value) + 1;
-            // Obtener el id_oficio de la URL
-            function getParameterByName(name) {
-                const url = window.location.href;
-                const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-                const results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, ' '));
-            }
+            
             // Crear un nuevo documento PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');

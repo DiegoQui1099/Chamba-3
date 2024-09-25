@@ -47,8 +47,9 @@ def index():
     localidades = cursor.fetchall()
  
     nombre_usuario = session.get('nombre')
-    # Obtener el ID del oficio si existe
-    id_oficio = request.args.get('id_oficio', None)
+    # Obtener el ID del último oficio creado (o según tu lógica)
+    cursor.execute("SELECT MAX(id) FROM oficios")
+    id_oficio = cursor.fetchone()[0]
  
     return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario, id_oficio=id_oficio)
 
