@@ -47,8 +47,10 @@ def index():
     localidades = cursor.fetchall()
  
     nombre_usuario = session.get('nombre')
+    # Obtener el ID del oficio si existe
+    id_oficio = request.args.get('id_oficio', None)
  
-    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario)
+    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario, id_oficio=id_oficio)
 
 @app.route('/add_oficios', methods=['POST'])
 def add_oficios():
@@ -117,14 +119,18 @@ def add_oficios():
         
         cursor.execute(sql, data)
         mysql.connection.commit()
+        # Obtener el ID del nuevo registro
+        id_oficio = cursor.lastrowid
         flash('Oficio agregado correctamente', 'success')
     except mysql.connection.Error as err:
         flash(f"Error al agregar el oficio: {err}", 'error')
         mysql.connection.rollback()
     finally:
         cursor.close()
+        # Obtener el ID del nuevo registro
+        
     
-    return redirect(url_for('index'))
+    return redirect(url_for('index', id_oficio=id_oficio))
 
 
 @app.route('/download/<filename>')

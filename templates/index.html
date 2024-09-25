@@ -62,7 +62,8 @@
                     </div>
                     <div class="row">
 
-                        <input type="hidden" name="nOficio" id="nOficio" readonly />
+                        <input type="hidden" id="id_oficio" value="{{ id_oficio }}">
+
                         <!-- *********************************** -->
 
                         <div class="col-md-6">
@@ -261,15 +262,29 @@
             var aPlano = document.getElementById("aPlano").value;
             var maxLength = 500; // Definir el límite de caracteres
             if (aPlano.length > maxLength) {
-                aPlano = aPlano.substring(0, maxLength); // Truncar aPlano si excede el límite
-                alert(`El texto ha sido truncado a ${maxLength} caracteres.`); // Opcional: alerta al usuario
+                aPlano = aPlano.substring(0, maxLength);
+                alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
             }
             var nombreCompleto = document.getElementById("nombreCompleto").value;
             var banco = document.getElementById("banco").options[document.getElementById("banco").selectedIndex].text;
             var lTramite = document.getElementById("lTramite").options[document.getElementById("lTramite").selectedIndex].text;
             var lLocalidad = document.getElementById("lLocalidad").options[document.getElementById("lLocalidad").selectedIndex].text;
             var observacion = document.getElementById("observacion").value;
-
+            var maxLength = 200;
+            if (observacion.length > maxLength) {
+                observacion = observacion.substring(0, maxLength);
+                alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
+            }
+            var idOficio = parseInt(document.getElementById("id_oficio").value) + 1;
+            // Obtener el id_oficio de la URL
+            function getParameterByName(name) {
+                const url = window.location.href;
+                const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+                const results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
             // Crear un nuevo documento PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -319,7 +334,7 @@
             // Bloque de texto alineado a la izquierda en negrita
             doc.setFont("times", "bold"); // Cambiar a fuente en negrita
             ajusteVertical += 12;
-            doc.text('DF-GCR–', leftMargin, ajusteVertical);  // Texto en negrita
+            doc.text(`DF-GCR- ${idOficio}`, leftMargin, ajusteVertical);  // Texto en negrita
             ajusteVertical += 10;
             doc.text('Bogotá D.C. ' + new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(), leftMargin, ajusteVertical);  // Texto en negrita
             ajusteVertical += 10;
@@ -341,15 +356,13 @@
             }
             ajusteVertical += 8;
 
-
-
             // Texto en fuente normal para todo, excepto "Ref:"
             doc.setFont("times", "bold"); // Cambiar a fuente en negrita solo para "Ref:"
             doc.text(`Ref:`, leftMargin, ajusteVertical); // "Ref:" en negrita
 
             // Cambiar a fuente normal para el resto del texto
             doc.setFont("times", "normal"); // Cambiar a fuente normal
-            doc.text(` Trámite De Duplicado De ${tipoDocumento.toUpperCase()}`, leftMargin + doc.getTextWidth("Ref:"), ajusteVertical); // "TRÁMITE DE DUPLICADO DE" en normal
+            doc.text(` Trámite De Duplicado De ${tipoDocumento}`, leftMargin + doc.getTextWidth("Ref:"), ajusteVertical); // "TRÁMITE DE DUPLICADO DE" en normal
 
             doc.setFont("times", "normal"); // Volver a fuente normal
             ajusteVertical += 8;
@@ -406,7 +419,7 @@
 
             // Texto inicial alineado a la izquierda
             doc.text('Respetados doctores.', leftMargin, ajusteVertical); // Texto normal
-            ajusteVertical += 6; // Espacio después del texto inicial
+            ajusteVertical += 8; // Espacio después del texto inicial
 
             // Texto inicial antes de la parte en negrita
             let bodyTextInicial = 'De manera atenta me permito informar que revisados los archivos planos del ';
@@ -415,9 +428,8 @@
             // Obtener el ancho del texto inicial
             let anchoTextoInicial = doc.getTextWidth(bodyTextInicial);
 
-            // Texto del banco en negrita
-            doc.setFont('times', 'bold'); // Cambié a 'bold' para que se vea en negrita
-            doc.text(`${banco}`, leftMargin + anchoTextoInicial, ajusteVertical); // Texto en negrita
+            doc.setFont('times', 'normal');
+            doc.text(`${banco},`, leftMargin + anchoTextoInicial, ajusteVertical);
 
             // Volver a fuente normal para el texto final
             doc.setFont('times', 'normal');
@@ -426,7 +438,7 @@
             let bodyTextFinal = `se verificó la siguiente consignación: ${aPlano}`;
 
             // Mover a la siguiente línea
-            ajusteVertical += 4;
+            ajusteVertical += 5;
 
             // Reducir el ancho máximo de las líneas para limitar la cantidad de líneas
             let lineHeightReduction = 6 * 5; // 6 líneas, asumiendo que cada línea ocupa 5 unidades verticales
@@ -448,7 +460,7 @@
 
             doc.setFontSize(12);
             // Detalles adicionales del proceso y texto final combinado
-            let bodyText2 = `Por lo tanto se Certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico: ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente se haya generado el documento.`;
+            let bodyText2 = `Por lo tanto, se certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente después de haberse generado el documento.`;
 
             // Ajustar el texto bodyText2 a la página
             doc.text(bodyText2, leftMargin, ajusteVertical, { align: "justify", maxWidth: pageWidth - leftMargin - rightMargin });
