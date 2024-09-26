@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nDocumento">Número de Documento</label>
-                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required/>
+                                <input type="text" class="form-control" name="nDocumento" id="nDocumento" required />
                             </div>
 
                         </div>
@@ -62,7 +62,8 @@
                     </div>
                     <div class="row">
 
-                        <input type="hidden" name="nOficio" id="nOficio" readonly />
+                        <input type="hidden" id="id_oficio" value="{{ id_oficio }}">
+
                         <!-- *********************************** -->
 
                         <div class="col-md-6">
@@ -70,7 +71,7 @@
 
                                 <label for="tipoDocumento">Tipo de Documento</label>
                                 <select name="tipoDocumento" class="form-control" id="tipoDocumento">
-                                    <option value="1" selected="selected">Seleccione</option>
+                                    <option value="null" selected="selected">Seleccione</option>
                                     {% for tipoDoc in tipodocumento %}
                                     <option value="{{ tipoDoc[0] }}">{{ tipoDoc[1] }}</option>
                                     {% endfor %}
@@ -84,7 +85,7 @@
 
                                 <label for="motivoAutorizacion">Motivo de autorización</label>
                                 <select name="motivoAutorizacion" class="form-control" id="motivoAutorizacion">
-                                    <option value="-1" selected="selected">Seleccione</option>
+                                    <option value="null" selected="selected">Seleccione</option>
                                     {% for motivo in motivoautorizacion %}
                                     <option value="{{ motivo[0] }}">{{ motivo[1] }}</option>
                                     {% endfor %}
@@ -112,7 +113,7 @@
 
                     <div class="form-group">
                         <label for="aPlano">Archivo Plano</label>
-                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2"></textarea>
+                        <textarea class="form-control" name="aPlano" id="aPlano" rows="2" required></textarea>
 
 
                     </div>
@@ -121,7 +122,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombreCompleto">Nombre</label>
-                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto" />
+                                <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto"
+                                    required />
 
                             </div>
                         </div>
@@ -130,7 +132,7 @@
                             <div class="form-group">
                                 <label for="banco">Banco</label>
                                 <select name="banco" class="form-control" id="banco">
-                                    <option value="1" selected="selected">Seleccione</option>
+                                    <option value="null" selected="selected">Seleccione</option>
                                     {% for banco in bancos %}
                                     <option value="{{ banco[0] }}">{{ banco[1] }}</option>
                                     {% endfor %}
@@ -143,7 +145,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dfecha">Fecha Consignación </label>
-                                <input type="date" name="dfecha" id="dFecha" class="form-control">
+                                <input type="date" name="dfecha" id="dFecha" class="form-control" required>
 
                             </div>
                         </div>
@@ -151,7 +153,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="valorConsignacion">Valor de Consignación </label>
-                                <input type="text" name="valorConsignacion" id="valorConsignacion" class="form-control">
+                                <input type="number" name="valorConsignacion" id="valorConsignacion"
+                                    class="form-control" required>
 
                             </div>
                         </div>
@@ -163,7 +166,7 @@
 
                                 <label for="lTramite">Lugar del trámite</label>
                                 <select name="lTramite" id="lTramite" class="form-control">
-                                    <option value="lTramite" selected="selected">Seleccione</option>
+                                    <option value="null" selected="selected">Seleccione</option>
                                     <option value="Bogota D.C">Bogota D.C</option>
                                     {% for dtos in departamentos %}
                                     <option value="{{ dtos[0] }}">{{ dtos[1] }}</option>
@@ -190,12 +193,8 @@
 
                     <div class="form-group">
                         <label for="observacion">Observaciones </label>
-                        <textarea class="form-control" name="observacion" id="observacion" rows="2"
-                            class="form-control"></textarea>
-
+                        <textarea class="form-control" name="observacion" id="observacion" rows="2"></textarea>
                     </div>
-
-
 
                     <div class="form-group">
                         <label id="botonPdf">
@@ -250,55 +249,280 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-
 
     <script>
-        document.getElementById('form1').addEventListener('submit', function (event) {
-            // Evita que el formulario se envíe inmediatamente
-            event.preventDefault();
+        document.getElementById("form1").addEventListener("submit", function (event) {
+            event.preventDefault();  // Evitar el envío del formulario dos veces
 
-            // Define el contenedor que quieres convertir a PDF
-            var element = document.getElementById('pdf-content');
-            var tableElement = element.querySelector('table');  // Seleccionamos la tabla
+            // Capturar los valores del formulario
+            var nDocumento = document.getElementById("nDocumento").value;
+            const Usuario = document.getElementById("Usuario").textContent;
+            var tipoDocumento = document.getElementById("tipoDocumento").options[document.getElementById("tipoDocumento").selectedIndex].text;
+            var motivoAutorizacion = document.getElementById("motivoAutorizacion").options[document.getElementById("motivoAutorizacion").selectedIndex].text;
+            // Capturar aPlano y aplicar límite
+            var aPlano = document.getElementById("aPlano").value;
+            var maxLength = 500; // Definir el límite de caracteres
+            if (aPlano.length > maxLength) {
+                aPlano = aPlano.substring(0, maxLength);
+                alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
+            }
+            var nombreCompleto = document.getElementById("nombreCompleto").value;
+            var banco = document.getElementById("banco").options[document.getElementById("banco").selectedIndex].text;
+            var lTramite = document.getElementById("lTramite").options[document.getElementById("lTramite").selectedIndex].text;
+            var lLocalidad = document.getElementById("lLocalidad").options[document.getElementById("lLocalidad").selectedIndex].text;
+            var observacion = document.getElementById("observacion").value;
+            var maxLength = 100;
+            if (observacion.length > maxLength) {
+                observacion = observacion.substring(0, maxLength);
+                alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
+            }
+            var idOficio = parseInt(document.getElementById("id_oficio").value) + 1;
 
-            // Guardamos los estilos originales de la tabla
-            var originalBorder = tableElement.getAttribute('border');
-            var originalWidth = tableElement.getAttribute('width');
-            var originalHeight = tableElement.getAttribute('height');
+            // Crear un nuevo documento PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
 
-            // Quitamos el borde, ancho y alto solo para la generación del PDF
-            tableElement.removeAttribute('border');
-            tableElement.removeAttribute('width');
-            tableElement.removeAttribute('height');
+            // Dimensiones originales del JPG
+            const originalWidth = 600;  // Ancho original en píxeles
+            const originalHeight = 860;  // Alto original en píxeles
 
-            // Opciones para html2pdf
-            var options = {
-                margin: [0, 0, 0, 0],
-                filename: 'documento.pdf',
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'px', format: [560, 750], orientation: 'portrait' }
-            };
+            // Dimensiones del documento A4 en mm
+            const a4Width = 210;  // Ancho A4
+            const a4Height = 297; // Alto A4
 
-            // Usa html2pdf para generar el PDF
-            html2pdf().from(element).set(options).save().then(function () {
-                // Restauramos los atributos originales de la tabla después de generar el PDF
-                tableElement.setAttribute('border', originalBorder);
-                tableElement.setAttribute('width', originalWidth);
-                tableElement.setAttribute('height', originalHeight);
+            // Calcular la escala para ajustar la imagen al tamaño A4
+            const scaleX = a4Width / originalWidth;
+            const scaleY = a4Height / originalHeight;
+            const scale = Math.min(scaleX, scaleY); // Usar la menor escala para mantener la relación de aspecto
 
-                // Ahora envía el formulario para guardar los datos en la base de datos
-                document.getElementById('form1').submit();  // Envío manual del formulario
-            });
+            // Nuevas dimensiones escaladas
+            const scaledWidth = originalWidth * scale;
+            const scaledHeight = originalHeight * scale;
+
+            // Función para agregar la plantilla a una página
+            function addTemplate() {
+                // Centrar la imagen en la página
+                const xOffset = (a4Width - scaledWidth) / 2;
+                const yOffset = (a4Height - scaledHeight) / 2;
+
+                // Agregar la imagen con las dimensiones escaladas
+                doc.addImage('/static/img/formatooficio1.jpg', 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
+            }
+
+            // Llamar a la función para agregar la plantilla
+            addTemplate();
+
+
+            // Configurar la fuente y el tamaño de texto
+            doc.setFont("times", "normal");
+            doc.setFontSize(12);
+
+            // Definir márgenes y posición
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const leftMargin = 20; // Establecer el margen izquierdo para el contenido principal
+            const rightMargin = 20;
+            let ajusteVertical = 35; // Iniciar más abajo para evitar que se solape con el logo
+
+            // Bloque de texto alineado a la izquierda en negrita
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
+            ajusteVertical += 12;
+            doc.text(`DF-GCR- ${idOficio}`, leftMargin, ajusteVertical);  // Texto en negrita
+            ajusteVertical += 10;
+            doc.text('Bogotá D.C. ' + new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(), leftMargin, ajusteVertical);  // Texto en negrita
+            ajusteVertical += 10;
+
+            // Volver a fuente normal
+            doc.setFont("times", "bold");
+            // Detalles del destinatario alineados a la izquierda
+            doc.text(`Señor`, leftMargin, ajusteVertical);
+            doc.setFont("times", "normal"); // Cambiar a fuente en negrita para el resto del texto
+
+            // Verifica si el trámite es en Bogotá
+            if (lTramite === "Bogota D.C") {
+                doc.text(`Registrador(a) auxiliar de la localidad de ${lLocalidad}`, leftMargin + doc.getTextWidth("Señor  "), ajusteVertical);
+            } else {
+                doc.setFont("times", "bold");
+                doc.text(`Señores`, leftMargin, ajusteVertical);
+                doc.setFont("times", "normal");
+                doc.text(`Delegados Departamentales de ${lTramite}`, leftMargin + doc.getTextWidth("Señores  "), ajusteVertical);
+            }
+            ajusteVertical += 8;
+
+            // Texto en fuente normal para todo, excepto "Ref:"
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita solo para "Ref:"
+            doc.text(`Ref:`, leftMargin, ajusteVertical); // "Ref:" en negrita
+
+            // Cambiar a fuente normal para el resto del texto
+            doc.setFont("times", "normal"); // Cambiar a fuente normal
+            doc.text(` Trámite De Duplicado De ${tipoDocumento}`, leftMargin + doc.getTextWidth("Ref:"), ajusteVertical); // "TRÁMITE DE DUPLICADO DE" en normal
+
+            doc.setFont("times", "normal"); // Volver a fuente normal
+            ajusteVertical += 8;
+
+            // Texto "FECHA DE GENERACIÓN DOCUMENTO" en negrita
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
+            doc.text(`Fecha De Generación Documento: `, leftMargin, ajusteVertical);
+
+            // Texto de la fecha en estilo normal con un pequeño espacio
+            doc.setFont("times", "normal"); // Volver a fuente normal
+            let espacio = 5; // Espacio adicional entre el texto y la fecha
+
+            // Formato de fecha sin segundos
+            let fechaGeneracion = new Date().toLocaleDateString(); // Solo la fecha
+            let horaGeneracion = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Solo horas y minutos
+
+            doc.text(`${fechaGeneracion} ${horaGeneracion}`, leftMargin + doc.getTextWidth('Fecha De Generación Documento: ') + espacio, ajusteVertical);
+
+            ajusteVertical += 8;
+
+            // Función para formatear la fecha en formato dd-mm-yyyy
+            function formatDate(date) {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            // Obtener la fecha actual
+            const currentDate = new Date();
+
+            // Calcular la fecha de caducidad sumando 8 días
+            const expirationDate = new Date(currentDate);
+            expirationDate.setDate(currentDate.getDate() + 8);
+
+            // Formatear la fecha de caducidad
+            const formattedExpirationDate = formatDate(expirationDate);
+
+            // Texto "FECHA DE CADUCIDAD DE ESTE DOCUMENTO" en negrita
+            doc.setFont("times", "bold"); // Cambiar a fuente en negrita
+            doc.text(`Fecha De Caducidad De Este Documento: `, leftMargin, ajusteVertical);
+
+            // Texto de la fecha en estilo normal con un pequeño espacio
+            doc.setFont("times", "normal"); // Volver a fuente normal
+            doc.text(formattedExpirationDate, leftMargin + doc.getTextWidth('Fecha De Caducidad De Este Documento: ') + espacio, ajusteVertical);
+
+            ajusteVertical += 10;
+
+            // Volver a fuente normal
+            doc.setFont("times", "normal");
+
+            // Cuerpo principal del texto
+            doc.setFontSize(12);
+
+            // Texto inicial alineado a la izquierda
+            doc.text('Respetados doctores.', leftMargin, ajusteVertical); // Texto normal
+            ajusteVertical += 8; // Espacio después del texto inicial
+
+            // Texto inicial antes de la parte en negrita
+            let bodyTextInicial = 'De manera atenta me permito informar que revisados los archivos planos del ';
+            doc.text(bodyTextInicial, leftMargin, ajusteVertical);
+
+            // Obtener el ancho del texto inicial
+            let anchoTextoInicial = doc.getTextWidth(bodyTextInicial);
+
+            doc.setFont('times', 'normal');
+            doc.text(`${banco},`, leftMargin + anchoTextoInicial, ajusteVertical);
+
+            // Volver a fuente normal para el texto final
+            doc.setFont('times', 'normal');
+
+            // Texto final que incluye "se verificó la siguiente consignación"
+            let bodyTextFinal = `se verificó la siguiente consignación: ${aPlano}`;
+
+            // Mover a la siguiente línea
+            ajusteVertical += 5;
+
+            // Reducir el ancho máximo de las líneas para limitar la cantidad de líneas
+            let lineHeightReduction = 6 * 5; // 6 líneas, asumiendo que cada línea ocupa 5 unidades verticales
+            let bodyTextFinalLines = doc.splitTextToSize(bodyTextFinal, pageWidth - leftMargin - rightMargin);
+
+            // Verificar cuántas líneas fueron generadas y reducir el ajuste vertical
+            if (bodyTextFinalLines.length > 6) {
+                bodyTextFinalLines = bodyTextFinalLines.slice(0, bodyTextFinalLines.length - 6); // Eliminar 6 líneas del final
+            }
+
+            // Dibujar las líneas del texto final
+            doc.text(bodyTextFinalLines, leftMargin, ajusteVertical);
+
+            // Ajustar el espacio vertical según el número de líneas generadas
+            ajusteVertical += bodyTextFinalLines.length * 4;
+
+            // Asegúrate de que el siguiente texto no se superponga
+            ajusteVertical += 5; // Agregar espacio entre bodyTextFinal y bodyText2
+
+            doc.setFontSize(12);
+            // Detalles adicionales del proceso y texto final combinado
+            let bodyText2 = `Por lo tanto, se certifica el ingreso de los recursos a la cuenta del FRR para el trámite de duplicado de ${tipoDocumento} al ciudadano(a) ${nombreCompleto} con cupo numérico ${nDocumento}, el cual se presenta por ${motivoAutorizacion}. Favor recibir la documentación y verificar en su correo electrónico el código único de autorización de validez del documento. Este código será enviado a su correo inmediatamente después de haberse generado el documento.`;
+
+            // Ajustar el texto bodyText2 a la página
+            doc.text(bodyText2, leftMargin, ajusteVertical, { align: "justify", maxWidth: pageWidth - leftMargin - rightMargin });
+
+
+            // Firma y detalles finales alineados a la izquierda
+            doc.setFontSize(12);
+
+            // Agregar un espacio adicional antes de "Cordialmente"
+            ajusteVertical += 30;
+            doc.text('Cordialmente,', leftMargin, ajusteVertical); // Cambiado para alineación a la izquierda
+            // Texto de observaciones
+            let bodyText3 = `Observaciones: ${observacion}`;
+
+            // Firma alineada a la izquierda
+            ajusteVertical += 10;
+            doc.addImage('/static/img/firma.png', 'PNG', leftMargin, ajusteVertical, 35, 15); // Firma alineada a la izquierda
+
+            ajusteVertical += 20; // Espacio después de la firma
+
+            // Dividir el texto en líneas que se ajusten al ancho disponible de la página
+            let bodyText3Lines = doc.splitTextToSize(bodyText3, pageWidth - leftMargin - rightMargin);
+
+            // Dibujar cada línea de texto en el PDF
+            doc.text(bodyText3Lines, leftMargin, ajusteVertical);
+
+            // Ajustar el espacio vertical después de imprimir el texto
+            ajusteVertical += bodyText3Lines.length * 5;
+            ajusteVertical += 7;
+            doc.text('CARLOS ANDRÉS CONTRERAS GONZÁLEZ', leftMargin, ajusteVertical); // Alineado a la izquierda
+
+            ajusteVertical += 6; // Espacio después del nombre
+            doc.text('Coordinador Control de Recaudos', leftMargin, ajusteVertical); // Alineado a la izquierda
+
+            ajusteVertical += 10;
+
+            // Detalles del usuario que lo elaboró alineados a la izquierda
+            doc.text(`Elaboro: ${Usuario}`, leftMargin, ajusteVertical); // Alineado a la izquierda
+            ajusteVertical += 6;
+            doc.text(`Aprobó: Carlos Andrés Contreras González`, leftMargin, ajusteVertical);
+            ajusteVertical += 18;
+
+            // Definir tamaño de fuente más pequeño
+            doc.setFontSize(7);
+
+            // Obtener el ancho del texto para 
+            const text = `Ley 527 de 1999, Articulo 28 – “ATRIBUTOS JURIDICOS DE UNA FIRMA DIGITAL” Parágrafo. “El uso de una firma digital tendrá la misma fuerza y efectos que el uso de una
+            sfirma manuscrita...” Artículo declarado EXEQUIBLE por la Corte Constitucional mediante Sentencia C-662-00 de 8 de junio de 2000`;
+            const textWidth = doc.getTextWidth(text);
+
+            // Imprimir el texto centrado
+            doc.text(text, leftMargin, ajusteVertical);
+
+            // Actualizar la posición vertical para la siguiente línea
+            ajusteVertical += 15;
+            // Descargar el archivo PDF
+            doc.save("documento_oficio.pdf");
+
+            // Enviar el formulario para guardar en la base de datos
+            setTimeout(function () {
+                document.getElementById("form1").submit();  // Enviar el formulario después de generar el PDF
+            }, 500);  // Esperar 500ms antes de enviar el formulario
         });
 
     </script>
 
 
+    </script>
     <script>
         $(document).ready(function () {
             // Inicialmente, desbloquear solo el campo de documento y bloquear el resto
@@ -308,13 +532,62 @@
             // Evento al escribir en el campo de documento
             $('#nDocumento').keyup(function () {
                 let documento = $(this).val();
-                if (documento.length > 5) {
+                if (documento.length > 5 && /^\d+$/.test(documento)) {
                     toggleFormFields(false);
                     configurarFormulario();  // Configurar el formulario cuando esté desbloqueado
                 } else {
                     // Bloquear todos los campos del formulario excepto el campo de documento
                     toggleFormFields(true);
                 }
+            });
+
+            // Evento de clic en el botón Guardar
+            $("#btnGuardar").click(function (e) {
+                let documento = $("#nDocumento").val();
+                let camposValidos = true;
+
+                // Verificar si el campo de documento tiene más de 6 dígitos y es solo numérico
+                if (documento.length < 6 || !/^\d+$/.test(documento)) {
+                    e.preventDefault(); // Evitar que el formulario se envíe
+                    alert("Debe ingresar un documento válido con al menos 6 números.");
+                    camposValidos = false;
+                }
+
+                // Validar los selects
+                if (!validarSelects()) {
+                    camposValidos = false; // Si la validación de selects falla, no continuar
+                }
+
+                // Verificar que todos los campos requeridos estén llenos
+                $("input[required], textarea[required]").each(function () {
+                    if ($(this).val().trim() === "") {
+                        alert("Debe completar todos los campos obligatorios.");
+                        $(this).focus();
+                        camposValidos = false;
+                        return false; // Salir del loop si encuentra un campo vacío
+                    }
+                });
+
+                // Validar el campo de valor de consignación
+                let valorConsignacion = $("#valorConsignacion").val();
+                if (valorConsignacion === "" || isNaN(valorConsignacion)) {
+                    e.preventDefault(); // Evitar que el formulario se envíe
+                    alert("El valor de consignación debe ser un número válido.");
+                    $("#valorConsignacion").focus(); // Enfocar el campo de valor de consignación
+                    camposValidos = false;
+                }
+
+                // Si todo está bien, permitir el envío del formulario
+                if (camposValidos) {
+                    alert("Formulario completado correctamente.");
+                    // Aquí puedes proceder con el envío del formulario
+                    $("#miFormulario").submit(); // Reemplaza #miFormulario con el ID de tu formulario
+                }
+            });
+
+            // Prevenir que el usuario escriba algo que no sean dígitos en el campo de documento
+            $('#nDocumento').on('input', function () {
+                this.value = this.value.replace(/\D/g, ''); // Remover cualquier carácter que no sea un número
             });
 
             // Inicialmente, deshabilitar el campo de localidad
@@ -343,6 +616,23 @@
                 $("checkbox").prop('disabled', disabled);
                 $("radio").prop('disabled', disabled);
                 $("label").prop('disabled', disabled);
+            }
+
+            // Validar que todos los selects tienen un valor seleccionado
+            function validarSelects() {
+                let valido = true;
+                $("select").each(function () {
+                    // Permitir que el select con ID 'lLocalidad' esté vacío
+                    if ($(this).attr('id') !== 'lLocalidad') {
+                        if ($(this).val() === "null" || $(this).val() === "") {
+                            alert("Debe seleccionar una opción en todos los campos de selección.");
+                            $(this).focus();
+                            valido = false;
+                            return false; // Salir del loop si encuentra un select vacío
+                        }
+                    }
+                });
+                return valido;
             }
 
             // Configuración del formulario cuando está desbloqueado
@@ -451,11 +741,28 @@
             }
 
             // Configurar el evento para actualizar el texto y ajustar el tamaño de la fuente
-            document.getElementById("aPlano").addEventListener("keyup", function () {
+            document.getElementById("aPlano").addEventListener("keyup", function (event) {
+                // Filtrar el salto de línea (Enter) y evitar que se agregue al texto
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Evitar el salto de línea
+                    return; // Salir del evento
+                }
+
                 const txtPlano = document.getElementById("txtPlano");
                 txtPlano.textContent = this.value;
                 actualizarTextoPlano();
             });
+
+            // Opcional: Puedes agregar un evento adicional para manejar el caso de pegado (Ctrl+V) que también podría incluir saltos de línea
+            document.getElementById("aPlano").addEventListener("paste", function (event) {
+                event.preventDefault(); // Prevenir la acción de pegar
+                const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+                this.value = pasteData.replace(/\r?\n|\r/g, ''); // Eliminar los saltos de línea del texto pegado
+                const txtPlano = document.getElementById("txtPlano");
+                txtPlano.textContent = this.value;
+                actualizarTextoPlano();
+            });
+
 
             function actualizarHora() {
                 const ahora = new Date();
@@ -463,7 +770,6 @@
                 const fechaHora = ahora.toLocaleString('es-ES', opciones);
                 document.getElementById('horaActual').textContent = `Bogotá D.C. ${fechaHora}`;
             }
-
 
             //Seleccion de Bogota para cambiar el archivo PDF
             document.getElementById('lTramite').addEventListener('change', function () {
@@ -477,13 +783,22 @@
                 }
             });
 
-
-
             // Actualizar la hora al cargar la página
             actualizarHora();
 
             // Actualizar la hora cada segundo
             setInterval(actualizarHora, 1000);
+        });
+    </script>
+
+    <script>
+        document.getElementById('form1').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evita el envío por defecto del formulario
+
+            // Aquí podrías añadir tu lógica de validación o envío por AJAX si es necesario
+            // Si el envío es exitoso, muestra el mensaje
+            alert('PDF generado exitosamente.');
+
         });
     </script>
 

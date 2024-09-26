@@ -47,8 +47,11 @@ def index():
     localidades = cursor.fetchall()
  
     nombre_usuario = session.get('nombre')
+    # Obtener el ID del último oficio creado (o según tu lógica)
+    cursor.execute("SELECT MAX(id) FROM oficios")
+    id_oficio = cursor.fetchone()[0]
  
-    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario)
+    return render_template('index.html', motivoautorizacion=motivoautorizacion, validaciondocumentos=validaciondocumentos, tipodocumento=tipodocumento, bancos=banco, departamentos=departamentos, localidades=localidades, nombre_usuario=nombre_usuario, id_oficio=id_oficio)
 
 @app.route('/add_oficios', methods=['POST'])
 def add_oficios():
@@ -117,14 +120,18 @@ def add_oficios():
         
         cursor.execute(sql, data)
         mysql.connection.commit()
+        # Obtener el ID del nuevo registro
+        id_oficio = cursor.lastrowid
         flash('Oficio agregado correctamente', 'success')
     except mysql.connection.Error as err:
         flash(f"Error al agregar el oficio: {err}", 'error')
         mysql.connection.rollback()
     finally:
         cursor.close()
+        # Obtener el ID del nuevo registro
+        
     
-    return redirect(url_for('index'))
+    return redirect(url_for('index', id_oficio=id_oficio))
 
 
 @app.route('/download/<filename>')
@@ -336,7 +343,7 @@ def after_request(response):
 @login_required
 def habilitar_usuario(id):
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE usuarios SET estado = 'A' WHERE id = %s", (id,))
+    cursor.execute("UPDATE usuarios SET estado = 'A' WHERE idUser = %s", (id,))
     mysql.connection.commit()
     cursor.close()
     flash('Usuario habilitado correctamente', 'success')
@@ -347,7 +354,7 @@ def habilitar_usuario(id):
 @login_required
 def inhabilitar_usuario(id):
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE usuarios SET estado = 'I' WHERE id = %s", (id,))
+    cursor.execute("UPDATE usuarios SET estado = 'I' WHERE idUser = %s", (id,))
     mysql.connection.commit()
     cursor.close()
     flash('Usuario inhabilitado correctamente', 'success')
