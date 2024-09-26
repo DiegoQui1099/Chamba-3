@@ -270,7 +270,7 @@
             var lTramite = document.getElementById("lTramite").options[document.getElementById("lTramite").selectedIndex].text;
             var lLocalidad = document.getElementById("lLocalidad").options[document.getElementById("lLocalidad").selectedIndex].text;
             var observacion = document.getElementById("observacion").value;
-            var maxLength = 200;
+            var maxLength = 100;
             if (observacion.length > maxLength) {
                 observacion = observacion.substring(0, maxLength);
                 alert(`El texto ha superado el limite de ${maxLength} caracteres.`);
@@ -305,7 +305,7 @@
                 const yOffset = (a4Height - scaledHeight) / 2;
 
                 // Agregar la imagen con las dimensiones escaladas
-                doc.addImage('/static/img/plantillaRecaudos2.jpg', 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
+                doc.addImage('/static/img/formatooficio1.jpg', 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
             }
 
             // Llamar a la función para agregar la plantilla
@@ -321,7 +321,7 @@
             const pageHeight = doc.internal.pageSize.getHeight();
             const leftMargin = 20; // Establecer el margen izquierdo para el contenido principal
             const rightMargin = 20;
-            let ajusteVertical = 45; // Iniciar más abajo para evitar que se solape con el logo
+            let ajusteVertical = 35; // Iniciar más abajo para evitar que se solape con el logo
 
             // Bloque de texto alineado a la izquierda en negrita
             doc.setFont("times", "bold"); // Cambiar a fuente en negrita
@@ -484,7 +484,7 @@
             ajusteVertical += 7;
             doc.text('CARLOS ANDRÉS CONTRERAS GONZÁLEZ', leftMargin, ajusteVertical); // Alineado a la izquierda
 
-            ajusteVertical += 10; // Espacio después del nombre
+            ajusteVertical += 6; // Espacio después del nombre
             doc.text('Coordinador Control de Recaudos', leftMargin, ajusteVertical); // Alineado a la izquierda
 
             ajusteVertical += 10;
